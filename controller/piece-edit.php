@@ -42,14 +42,20 @@ if (isset($_POST['update_manual'])) {
 	}
 
 	if (!strlen($errorMessage)) {
+		$datetime = $mysqli->real_escape_string(date("c"));
+
 		$title = $mysqli->real_escape_string(htmlentities($_POST['pieceTitle'], ENT_QUOTES, "UTF-8"));
 		$data  = $mysqli->real_escape_string(htmlentities($_POST['pieceData'], ENT_QUOTES, "UTF-8"));
 
 		$sql = "UPDATE Pieces SET
-				Title = '$title',
-				Data = '$data'
+				Title   = '$title',
+				Data    = '$data',
+				Updated = '$datetime'
 				WHERE Piece_ID = '$pieceId'
 				AND   User_ID  = '$userId'";
 		$mysqli->query($sql);
 	}
+}
+elseif (isset($_POST['update'])) {
+	print_r($_POST);
 }

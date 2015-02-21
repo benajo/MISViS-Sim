@@ -118,27 +118,6 @@ function validate_password($p1, $p2)
 
 /**
  * @author Ben Jovanic
- * @version 2014-02-15
- *
- * Applies mysqli_real_escape_string() to the _POST data to combat SQL injection
- */
-function escape_post_data()
-{
-	global $mysqli;
-
-	$escaped = array();
-
-	foreach ($_POST as $k => $v) {
-		if (!is_array($v)) {
-			$escaped[$k] = $mysqli->real_escape_string(trim($v));
-		}
-	}
-
-	return $escaped;
-}
-
-/**
- * @author Ben Jovanic
  * @version 2015-02-13
  *
  * Outputs error and success messages.

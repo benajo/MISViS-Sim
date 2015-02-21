@@ -131,18 +131,20 @@ $piece = $result->fetch_assoc();
 				<button onclick="">New Note</button>
 			</p> -->
 		</div>
+		<p>
+			<button type="button" onclick="pieceNewStave()">New Stave</button>
+		</p>
+
+		<p><input type="submit" name="update" value="Update"></p>
+
 		<script type="text/javascript">
 		$(function() {
 			// $("#vextabContainer textarea").hide();
 		});
 		</script>
+	<?php } else { ?>
+		<p><input type="submit" name="update_manual" value="Update"></p>
 	<?php } ?>
-	<p>
-		<button type="button" onclick="pieceNewStave()">New Stave</button>
-	</p>
-	<p>
-		<input type="submit" name="update_manual" value="Update">
-	</p>
 </form>
 
 <script type="text/javascript">
