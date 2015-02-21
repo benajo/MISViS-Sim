@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MISViS Simulation</title>
+
+<link rel="stylesheet" type="text/css" href="style/normalize.css">
+<link rel="stylesheet" type="text/css" href="style/style.css">
+
+<script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+<script type="text/javascript" src="js/vextab-div.js"></script>
+
+<script type="text/javascript">
+$(function() {
+	hover();
+});
+
+function hover()
+{
+	// get the canvas element
+	var c = document.getElementsByClassName("vex-canvas")[0];
+
+	// simple mousemove function to display the
+	// RGBA colour for the current pixel
+	$(".vex-canvas").mousemove(function(event) {
+		var d = c.getContext('2d').getImageData(event.offsetX, event.offsetY, c.width, c.height).data;
+
+		$("#rv").html(d[0]);
+		$("#gv").html(d[1]);
+		$("#bv").html(d[2]);
+		$("#av").html(d[3]);
+	});
+}
+</script>
+
+<script type="text/javascript">
+var c; // VexTab canvas element
+var data; // for pixel colours
+var date, start, end;
+
+var scale; // scale value of the VexTab canvas
+var x; // x coordinate of start of lines
+var staveLineHeight; // height of stave lines in pixels
+var staveSpaceHeight; // height of stave space between lines in pixels
+var staveLines; // array of all stave line positions
+
+var overlayDivs; // div elements inside the overlay
+
+$(function() {
+	c = document.getElementsByClassName("vex-canvas")[0]; // set the canvas element
+	// scale = parseFloat($(".editor").val().match(/scale=([0-9]+(\.[0-9]+)?)/i)[1]);
+	scale = parseFloat($("#vextabContainer").attr("scale")); // set the scale value
+	x = 12*scale; // set the x position
+});
+
+/**
+ * This method loops over ALL pixels in the canvas image.
+ * Proved to be impossibly slow. Would freeze browser and
+ * request to kill the page.
+ */
+function method1()
+{
+	// loop over the width of the canvas
+	for (var x = 0; x < c.width; x++) {
+		// loop over the height of the canvas
+		for (var y = 0; y < c.height; y++) {
+			// get current pixel's colour data
+			data = c.getContext('2d').getImageData(x, y, c.width, c.height).data;
+		};
+	};
+}
+
+/**
+ * This method loops down the 12 x axis pixel in the canvas image.
+ * This method worked but was slower in comparison to method3().
+ * Too slow for usability.
+ */
+function method2()
+{
+	staveLines = [];
+
+	date = new Date();
+	start = date.getTime();
+
+	staveLineHeight = 0, staveSpaceHeight = 0;
+	var staveLineHeightSet = false, staveSpaceHeightSet = false;
+	var lastColour = 0;
+
+	// loop over the height of the canvas
+	for (var y = 0; y < c.height; y++) {
+		// get current pixel's colour data
+		data = c.getContext('2d').getImageData(x, y, c.width, c.height).data;
+
+		// add the point each lines begins to an array
+		if (data[0] != 0 && lastColour == 0) {
+			staveLines.push(y);
+		}
+
+		// if the stave line height has not been set
+		if (!staveLineHeightSet) {
+			// if current pixel is 0 and last is not 0
+			// then first line has been passed
+			// so update the height set to true
+			if (data[0] == 0 && lastColour != 0) {
+				staveLineHeightSet = true;
+			}
+			// increment the line height if current pixel is not 0
+			if (data[0] != 0) {
+				staveLineHeight++;
+			}
+		}
+
+		// if the stave space height has not been set
+		if (!staveSpaceHeightSet && staveLineHeightSet) {
+			// if current pixel is not 0 and last is 0
+			// then first stave space has been passed
+			// so update the space set to true
+			if (data[0] != 0 && lastColour == 0) {
+				staveSpaceHeightSet = true;
+			}
+			// increment the space height if the current pixel is 0
+			if (data[0] == 0) {
+				staveSpaceHeight++;
+			}
+		}
+
+		// c.getContext('2d').putImageData( redLine, x, y );
+
+		lastColour = data[0];
+	};
+
+	date = new Date();
+	end = date.getTime();
+
+	console.log("Elapsed time method2(): " + (end - start));
+}
+
+/**
+ * This method assumes the dimensions of the canvas layout through personal inspection.
+ * This method was by far the fastest and was chosen for implementation.
+ * Values:
+ *    - height of the lines in the stave = 2px
+ *    - height of the space between the lines on the stave = 8px
+ *    - space at the top of the canvas = 38px
+ *    - space from the top of 1 stave to the top of the next = 90px
+ *    - manual spacings entered are in pixels and therefore easy to account for when
+ *      calculating positions of stave lines.
+ */
+function method3()
+{
+	staveLines = [];
+
+	date = new Date();
+	start = date.getTime();
+
+	var staveNo = $(".editor").val().match(/tabstave/ig).length; // amount of staves in the canvas
+
+	staveLineHeight = 2*scale, staveSpaceHeight = 8*scale;
+
+	var spacings = $(".editor").val().match(/space=([0-9]+)/ig); // the individual spacings in the canvas
+	// remove the text and just leave the integer value
+	for (var i = 0; i < spacings.length; i++) {
+		spacings[i] = parseFloat(spacings[i].split("=")[1]);
+	};
+
+	// defaults
+	var topSpace = (38+1)*scale; // +1 because 39 is where the first line begins
+	var topToTopSpace = 90*scale;
+
+	// each new stave has to account for previous spacings
+	// so tally up the total space as the loop progresses
+	var cumulativeSpace = 0;
+
+	// loop over each stave to find the stave line positions
+	for (var i = 0; i < staveNo; i++) {
+		// stave i has to account for space i*2 and i*2-1
+		// when i = 0, then i*2-1 is out of bounds, the if below accounts for it.
+		// a full explanation of this spacing calculation will be in the report
+		if (i == 0) {
+			cumulativeSpace += (spacings[i*2])*scale;
+		}
+		else {
+			cumulativeSpace += (spacings[i*2] + spacings[i*2-1])*scale;
+		}
+
+		// 5 lines per stave
+		for (var j = 0; j < 5; j++) {
+			staveLines.push((topSpace) + (topToTopSpace*i) + ((staveLineHeight+staveSpaceHeight)*j) + cumulativeSpace);
+		};
+	};
+
+	date = new Date();
+	end = date.getTime();
+
+	console.log("Elapsed time method3(): " + (end - start));
+}
+
+/**
+ * This function draws red boxes on the canvas between the lines.
+ * Its purpose was to show the positions were figured out correctly.
+ */
+function redBox()
+{
+	var boxWidth = c.width - x*2;
+	var boxHeight = staveSpaceHeight;
+
+	var redBox = c.getContext('2d').createImageData(boxWidth, boxHeight);
+
+	//  set the box pixels to red
+	for (var i = 0; i < redBox.data.length; i += 4) {
+	    redBox.data[i+0] = 255;
+	    redBox.data[i+1] = 0;
+	    redBox.data[i+2] = 0;
+	    redBox.data[i+3] = 255;
+	}
+
+	// for each stave
+	for (var i = 0; i < staveLines.length; i++) {
+		// don't draw below 5th line
+		if ((i+1) % 5 > 0) {
+			c.getContext('2d').putImageData(redBox, x, staveLines[i] + staveLineHeight);
+		}
+	};
+}
+
+/**
+ * This function creates the div elements that overlay the canvas element.
+ * 1. One div with the same dimesions as the canvas.
+ * 2. A div for each stave space.
+ * 3. A div for each pixel within the stave spaces.
+ */
+function createOverlays(no)
+{
+	$("#overlay").remove();
+
+	date = new Date();
+	start = date.getTime();
+
+	// create the overlay element
+	var overlay = document.createElement("div");
+	overlay.id = "overlay";
+	// ensure it has the same dimensions as the canvas
+	overlay.style.width  = c.width + "px";
+	overlay.style.height = c.height + "px";
+	// append it to the vextab container
+	document.getElementById("vextabContainer").appendChild(overlay);
+
+	var width = c.width - x*2; // width of inner overlay elements
+	var height = staveSpaceHeight; // height of inner overlay elements
+	var r; // variable for random integer
+	var div;
+
+	// create the inner elements
+	for (var i = 0; i < staveLines.length; i++) {
+		// don't draw below 5th line
+		if ((i+1) % 5 > 0) {
+			div = document.createElement("div");
+			div.style.width      = width + "px";
+			div.style.height     = height-2 + "px"; // -2 to account for padding
+			div.style.top        = staveLines[i] + staveLineHeight + "px";
+			div.style.left       = x + "px";
+			div.style.paddingTop = 2 + "px";
+
+			document.getElementById("overlay").appendChild(div);
+		}
+	};
+
+	overlayDivs = document.getElementById("overlay").children;
+
+
+	// NOTES::  JQUERY ATTEMPT TO CREATE THE DIVS. WAS TOO SLOW COMPARED TO VANILLA JS
+	if (no == 1) {
+		$("#overlay > div").each(function() {
+			for (var i = 0; i < width; i++) {
+				for (var j = 2; j < height-2; j++) {
+					r = Math.random() * 2;
+
+					$(this).append('<div style="background-color: ' + (r < 1 ? 'rgb(100,100,100);' : '') + '; width: 1px; height: 1px;"></div>')
+				}
+			}
+		});
+	}
+	// create the pixel divs
+	else if (no == 2) {
+		for (var i = 0; i < overlayDivs.length; i++) {
+			for (var j = 0; j < width; j++) {
+				for (var k = 2; k <= (height-2); k++) {
+					r = Math.random() * 2;
+
+					div = document.createElement("div");
+					div.style.backgroundColor = r < 1 ? 'rgb(100,100,100)' : ''; // 50% chance of being grey
+					div.style.width = "1px";
+					div.style.height = "1px";
+
+					overlayDivs[i].appendChild(div);
+				}
+			}
+		};
+	}
+
+	date = new Date();
+	end = date.getTime();
+
+	console.log("Elapsed time createOverlays(" + no + "): " + (end - start));
+}
+
+function flicker()
+{
+	date = new Date();
+	start = date.getTime();
+
+	// NOTES:: DID NOT PROVIDE THE CORRECT EFFECT. SLIDES IN FROM LEFT.
+		// $("#overlay > div").each(function() {
+		// 	var div = $(this);
+		// 	$(function() {
+		// 		div.show(2000).hide(100, arguments.callee);
+		// 	});
+		// })
+
+
+	// NOTES:: TRIED TO CREATE A SORT OF RECURSION HERE. HOWEVER, i IS UPDATED
+	// FOR EACH CONSECUTIVE FUNCTION
+		// for (var i = 0; i < 2; i++) {
+		// 	$(function() {
+		// 		$(overlayDivs[i]).hide(10).show(10, arguments.callee);
+		// 	});
+		// }
+
+	var funs = {};
+	var intervals = [];
+
+	// NOTES:: ISSUE HERE IS THAT i IS REFERENCED IN EACH CONSECTUIVE FUNCTION
+	// AND MEANS THE EFFECT ONLY HAPPENS ON THE FINAL CHILD
+	// TRIED TO EVALUATE JAVASCRIPT STRINGS BUT DIDN'T WORK
+		// for (var i = 0; i < overlayDivs.length; i++) {
+
+		// 	funs.push("overlayDivs[" + i + "].style.backgroundColor = '#F00';");
+		// }
+		// for (var i = 0; i < overlayDivs.length; i++) {
+		// 	$(function() {
+		// 		intervals.push(setInterval(function() {eval("console.log('funs["+i+"]')")}, 1000));
+		// 		// setInterval(function() {eval("overlayDivs[" + i + "].style.backgroundColor = '#F00'")}, 1000)
+		// 	})
+		// }
+
+	// console.log(funs)
+	// console.log(intervals)
+
+	// NOTES:: TRIED TO CREATE OBJECT IN A STRING THEN EVAULATE IT. BUT SAME ISSUE ARRISES,
+	// I CANNOT LOOP OVER THE ELEMENTS AND SET DIFFERENT INTERVALS FOR THEM
+		// var str = "var obj = {";
+
+		// for (var i = 0; i < overlayDivs.length; i++) {
+		// 	str += '' + i + ' : "overlayDivs[' + i + '].style.backgroundColor = \'#F00\'",'
+		// }
+
+		// str += "}";
+
+		// eval(str);
+		// // console.log(str)
+
+		// for (var val in obj) {
+		// 	if (obj.hasOwnProperty(val)) {
+
+		// 		intervals.push(setInterval(function() {eval(obj[val])}, 1000))
+		// 	}
+		// }
+
+	// NOTES:: INTERVAL ISN'T THE RIGHT OPTION EITHER. I NEED THE TIME TO CHANGE EVERY TIME
+	// IT LOOPS. INTERVAL MEANT IT WOULD EVENTUALLY REPEAT THE FLICKERS AND IT DIDN'T LOOK REALISTIC
+		// intervals.push(setInterval(function() { overlayDivs[0].style.visibility = 'hidden' }, 1000))
+		// intervals.push(setInterval(function() { overlayDivs[0].style.visibility = 'visible' }, 300))
+		// intervals.push(setInterval(function() { overlayDivs[1].style.visibility = 'hidden' }, 1020))
+		// intervals.push(setInterval(function() { overlayDivs[1].style.visibility = 'visible' }, 320))
+
+	//NOTES::  ANOTHER ATTEMPT TO RECURSE CALL THE FUNCTION USING TIMEOUTS. ALMOST MADE PROGESS,
+	// BY BEING ABLE TO PASS i INTO THE TIMEOUT FUCTION not BY REFERENCE, AND BY VALUE INSTEAD
+		// for (var i = 0; i < overlayDivs.length; i++) {
+		// 	(function loopy(s, k) {
+		// 		// if (s) {
+		// 		// 	i=k
+		// 		// }
+		// 		// console.log(j);
+
+		// 		// setTimeout(arguments.callee(i), 2000, 'hiya');
+
+
+		// 		setTimeout(function(j) {
+		// 			// console.log(overlayDivs[j].style.backgroundColor);
+		// 			// if (overlayDivs[j].style.backgroundColor.length == 0) {
+		// 			// 	overlayDivs[j].style.backgroundColor = 'rgb(255, 0, 0)';
+		// 			// }
+		// 			// else {
+		// 			// 	overlayDivs[j].style.backgroundColor = '';
+		// 			// }
+		// 			console.log(j);
+		// 			if (overlayDivs[j].style.visibility != 'visible') {
+		// 				overlayDivs[j].style.visibility = 'visible';
+		// 			}
+		// 			else {
+		// 				overlayDivs[j].style.visibility = 'hidden';
+		// 			}
+		// 			// loopy(true, j);
+		// 		}, parseInt(Math.random()*(200-100)+100), i/*, arguments.callee*/)
+		// 		// intervals.push(setInterval(function() {eval("console.log('funs["+i+"]')")}, 1000));
+		// 		// setInterval(function() {eval("overlayDivs[" + i + "].style.backgroundColor = '#F00'")}, 1000)
+		// 	})
+		// }
+
+	// THIS WORKS BECAUSE I CREATE SEPARATE FUNCTIONS FOR EACH DIV THAT NEEDS TO FLICKER.
+	// EACH FUNCTION IS THEN IN ITS OWN TIMEOUT. THIS TOOK 2 DAYS TO GET TO.
+	for (var i = 0; i < overlayDivs.length; i++) {
+		eval(
+			'var Fun'+i+' = function() {'+
+				// 'console.log("Fun'+i+'");'+
+				'if (overlayDivs['+i+'].style.visibility != "visible") {'+
+					'overlayDivs['+i+'].style.visibility = "visible";'+
+					't'+i+' = setTimeout(Fun'+i+', parseInt(Math.random()*(2000-1000)+1000));'+
+				'}'+
+				'else {'+
+					'overlayDivs['+i+'].style.visibility = "hidden";'+
+					't'+i+' = setTimeout(Fun'+i+', parseInt(Math.random()*(10-5)+5));'+
+				'}'+
+
+			'}; Fun'+i+'()'
+		);
+	}
+
+
+
+	date = new Date();
+	end = date.getTime();
+
+	console.log("Elapsed time flicker(): " + (end - start));
+}
+</script>
+</head>
+<body>
+	<div>(R, G, B, A): (<span id="rv"></span>, <span id="gv"></span>, <span id="bv"></span>, <span id="av"></span>)</div>
+	<div id="vextabContainer" class="vex-tabdiv" width="700" scale="1.2" editor="true" editor_width="700" editor_height="150">
+	options space=0
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :8 E-D#/5 | E-D#-E/5 B/4 Dn-C/5 | :4 A/4 :8 ## C-E-A/4 | :4 B/4 :8 ## E-G#-B/4 | :4 C/5 :8 ## E/4-E-D#/5
+	options space=0
+
+	options space=20
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :8 E-D#-E/5 B/4 Dn-C/5 | :4 A/4 :8 ## C-E-A/4 | :4 B/4 :8 ## E/4-C/5-B/4 | :2 A/4 :8 E-D#/5 | E-D#-E/5 B/4 Dn-C/5
+	options space=0
+
+	options space=20
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :4 A/4 :8 ## C-E-A/4 | :4 B/4 :8 ## E-G#-B/4 | :4 C/5 :8 ## E/4-E/5-D#/5 | E-D#-E/5 B/4 Dn-C/5 | :4 A/4 :8 ## C-E-A/4
+	options space=0
+
+	options space=20
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :4 B/4 :8 ## E/4-C/5-B/4 | :4 A/4 :8 ## B/4-C-D/5 | :4d E/5 :8 G/4-F-E/5 | :4d D/5 :8 F/4-E-D/5 | :4d C/5 :8 E/4-D-C/5
+	options space=30
+	</div>
+
+	<button onclick="method1()">Method 1</button>
+	<button onclick="method2()">Method 2</button>
+	<button onclick="method3()">Method 3</button>
+	<br>
+	<button onclick="redBox()">Red Box</button> -
+	<button onclick="createOverlays(1)">Create Overlays 1</button>
+	<button onclick="createOverlays(2)">Create Overlays 2</button>
+	<br>
+	<button onclick="flicker()">Flicker</button>
+</body>
+</html>

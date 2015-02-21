@@ -1,0 +1,177 @@
+/* body */
+body {
+	background: #D5EBE8;
+	font-size: 16px;
+}
+
+/* page container */
+#page-container {
+	background: #fff;
+	width: 1000px;
+	margin: 10px auto;
+	padding: 10px;
+	box-shadow: 0px 0px 3px 1px #999;
+	/*border-radius: 5px 5px 5px;*/
+}
+
+/* page header */
+#page-header {
+	width: 1000px;
+	height: 50px;
+	margin: 0 0 10px;
+	border-bottom: 1px solid #D5EBE8;
+}
+#page-logo {
+	float: left;
+	font-size: 48px;
+}
+
+/* page navigation */
+#page-nav {
+	/*width: 750px;*/
+	height: 35px;
+	padding: 4px 0 0;
+	float: right;
+	font-size: 18px;
+	line-height: 18px;
+}
+#page-nav ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+#page-nav li {
+	display: block;
+	float: left;
+}
+#page-nav a,
+#page-nav a:visited {
+	height: 25px;
+	padding: 5px 10px;
+	display: block;
+	text-decoration: none;
+	line-height: 25px;
+	color: #000;
+}
+#page-nav a:hover {
+	text-shadow: 0px 0px 1px #999;
+}
+
+/* page content */
+#page-content {
+	clear: both;
+}
+
+/* page footer */
+#page-footer {
+	margin: 30px 0 0;
+	padding: 10px 0 0;
+	border-top: 1px solid #D5EBE8;
+}
+
+/* forms */
+label {
+	width: 150px;
+	display: block;
+	float: left;
+	line-height: 30px;
+}
+label:nth-child(3) {
+	width: 145px;
+	padding-left: 5px;
+}
+input {
+	width: 344px;
+	padding: 2px;
+	display: block;
+	float: left;
+	border: 1px solid #666;
+	border-radius: 3px;
+	font-size: 24px;
+}
+form p {
+	overflow: hidden;
+}
+input[type=submit] {
+	background: none;
+	width: auto !important;
+	padding: 6px 10px 4px;
+	display: inline;
+	float: none;
+	border: 2px solid #000;
+}
+input[type=submit]:hover {
+	text-shadow: 0px 0px 1px #999;
+}
+input[type=radio] {
+	width: auto !important;
+	margin: 5px;
+}
+form .error-message {
+	color: #F00;
+}
+form .success-message {
+	color: #070;
+}
+label.radio {
+	width: auto !important;
+}
+
+#pieceEdit fieldset {
+	margin: 0;
+	padding: 0 10px;
+}
+#pieceEdit fieldset label {
+	line-height: 22px;
+	display: inline;
+	float: none;
+}
+#pieceEdit fieldset input {
+	width: 40px;
+	font-size: 16px;
+	display: inline;
+	float: none;
+}
+#pieceEdit .noteEntry label {
+	display: block;
+	float: left;
+}
+#pieceEdit .noteEntry input {
+	display: block;
+	float: left;
+}
+#pieceEdit .noteEntry {
+	width: 215px;
+	margin: 0 10px 10px 0;
+	float: left;
+}
+#pieceEdit .noteEntry:nth-child(4n+0) {
+	margin-right: 0;
+}
+#pieceEdit .noteEntry label {
+	width: 65px;
+}
+#pieceEdit .noteEntry p {
+	margin: 5px 0;
+}
+#pieceEdit .newNote {
+	clear: left;
+}
+
+/* Fizzing simulation */
+#vextabContainer canvas {
+	position: relative;
+	z-index: 1;
+}
+#overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 0;
+}
+#overlay > div {
+	position: absolute;
+}
+#overlay > div > div {
+	float: left;
+}
