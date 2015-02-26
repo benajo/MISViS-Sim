@@ -42,7 +42,9 @@ $piece = $result->fetch_assoc();
 				while ($stave = $staves->fetch_assoc()) {
 					?>
 					<fieldset id="pieceStave<?php echo $staveCount; ?>" class="stave">
-						<legend>Stave <?php echo $staveCount; ?></legend>
+						<legend>Stave <span class="staveNo"><?php echo $staveCount; ?></span></legend>
+
+						<p><button type="button" onclick="pieceDeleteStave(<?php echo $staveCount; ?>)">Delete</button>
 
 						<p>
 							<label for="staveClef<?php echo $staveCount; ?>">Clef</label>

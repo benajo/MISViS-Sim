@@ -167,6 +167,7 @@ function fizzingOff()
 $.ajaxSetup({ cache: false });
 
 var staveHTML, noteHTML;
+var staveCount;
 
 $(function() {
 	//
@@ -212,30 +213,35 @@ $(function() {
 	$("fieldset.stave select, fieldset.stave input[type=checkbox]").each(function() {
 		$(this).change(function() { updateVexTabTextarea(); });
 	});
+
+	//
+	staveCount = $("#staveList fieldset.stave").length;
 });
 
 function pieceNewStave()
 {
-	var len = $("#staveList fieldset.stave").length + 1;
+	staveCount += 1;
 
-	var html = staveHTML.replace(/_STAVE_NO_/gi, len);
+	var html = staveHTML.replace(/_STAVE_NO_/gi, staveCount);
 
 	$("#staveList").append(html);
 
-	$("#pieceStave" + len + " select").each(function() {
+	$("#pieceStave" + staveCount + " select").each(function() {
 		$(this).change(function() { updateVexTabTextarea(); });
 	});
 
-	$("#pieceStave" + len + " input").each(function() {
+	$("#pieceStave" + staveCount + " input").each(function() {
 		$(this).keyup(function() { updateVexTabTextarea(); });
 	});
 
 	for (var i = 0; i < 4; i++) {
-		pieceNewNote(len);
+		pieceNewNote(staveCount);
 	}
 
-	$($("#pieceStave" + len + " fieldset.noteEntry .duration option[data-vex=':q']")[0]).attr("selected", "selected");
-	$($("#pieceStave" + len + " fieldset.noteEntry .octave option[value='4']")[0]).attr("selected", "selected");
+	$($("#pieceStave" + staveCount + " fieldset.noteEntry .duration option[data-vex=':q']")[0]).attr("selected", "selected");
+	$($("#pieceStave" + staveCount + " fieldset.noteEntry .octave option[value='4']")[0]).attr("selected", "selected");
+
+	updateStaveNos();
 
 	updateVexTabTextarea();
 }
@@ -261,9 +267,29 @@ function pieceNewNote(staveNo)
 
 function pieceDeleteNote(staveNo, noteNo)
 {
- $("#pieceStave" + staveNo + " #pieceStaveNote" + noteNo).remove();
+	$("#pieceStave" + staveNo + " #pieceStaveNote" + noteNo).remove();
 
- updateVexTabTextarea();
+	updateVexTabTextarea();
+}
+
+function pieceDeleteStave(staveNo)
+{
+	$("#pieceStave" + staveNo).remove();
+
+	updateStaveNos();
+
+	updateVexTabTextarea();
+}
+
+function updateStaveNos()
+{
+	var i = 1;
+
+	$("#staveList fieldset.stave").each(function() {
+		$(this).find(".staveNo").html(i);
+
+		i++;
+	});
 }
 
 function updateVexTabTextarea()

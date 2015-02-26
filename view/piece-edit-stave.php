@@ -4,7 +4,9 @@ require '../inc/globals.php';
 require '../inc/functions.php';
 ?>
 <fieldset id="pieceStave_STAVE_NO_" class="stave">
-	<legend>Stave _STAVE_NO_</legend>
+	<legend>Stave <span class="staveNo"></span></legend>
+
+	<p><button type="button" onclick="pieceDeleteStave(_STAVE_NO_)">Delete</button>
 
 	<p>
 		<label for="staveClef_STAVE_NO_">Clef</label>
