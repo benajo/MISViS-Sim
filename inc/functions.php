@@ -126,6 +126,8 @@ function display_messages()
 {
 	global $errorMessage, $successMessage;
 
+	echo "<div class='displayMessages'>";
+
 	if (strlen($errorMessage)) {
 		echo '<div class="error-message">';
 		echo $errorMessage;
@@ -137,4 +139,6 @@ function display_messages()
 		echo $successMessage;
 		echo '</div>';
 	}
+
+	echo "</div>";
 }

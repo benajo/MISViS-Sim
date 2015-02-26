@@ -1,5 +1,3 @@
-$.ajaxSetup({ cache: false });
-
 var c; // VexTab canvas element
 var data; // for pixel colours
 
@@ -162,59 +160,110 @@ function fizzingOff()
 	}
 }
 
-function pieceNewStave()
-{
+
+// --------
+
+
+$.ajaxSetup({ cache: false });
+
+var staveHTML, noteHTML;
+
+$(function() {
+	//
 	$.ajax({
 		type: "GET",
 		url: "./view/piece-edit-stave.php"
 	})
 	.done(function(html) {
-		var len = $("#staveList fieldset.stave").length + 1;
-
-		html = html.replace(/_STAVE_NO_/gi, len);
-
-		$("#staveList").append(html);
-
-		$("#pieceStave" + len + " select").each(function() {
-			$(this).change(function() { updateVexTabTextarea(); });
-		});
-
-		$("#pieceStave" + len + " input").each(function() {
-			$(this).keyup(function() { updateVexTabTextarea(); });
-		});
-
-		for (var i = 0; i < 4; i++) {
-			pieceNewNote(len);
-		}
-
-		// $($("#pieceStave" + len + " fieldset.noteEntry .duration option[data-vex=':q']")[0]).attr("selected", "selected");
+		staveHTML = html;
 	});
-}
 
-function pieceNewNote(staveNo)
-{
+	//
 	$.ajax({
 		type: "GET",
 		url: "./view/piece-edit-note.php"
 	})
 	.done(function(html) {
-		var len = $("#pieceStave" + staveNo + " fieldset.noteEntry").length + 1;
-
-		html = html.replace(/_STAVE_NO_/gi, staveNo);
-		html = html.replace(/_NOTE_NO_/gi, len);
-
-		$("#pieceStave" + staveNo + " .notes").append(html);
-
-		$("#pieceStaveNote" + len + " select, #pieceStaveNote" + len + " input[type=radio]").each(function() {
-			$(this).change(function() { updateVexTabTextarea(); });
-		});
-
-		$("#pieceStaveNote" + len + " input").each(function() {
-			$(this).keyup(function() { updateVexTabTextarea(); });
-		});
-
-		updateVexTabTextarea();
+		noteHTML = html;
 	});
+
+	//
+	$("#pieceEdit").submit(function() {
+		var options = {
+			url: "./controller/piece-edit-ajax.php",
+			dataType: "json",
+			success: function(json) {
+				if (json.successMessage)
+					$("#pieceEdit .displayMessages").html("<div class='success-message'>" + json.successMessage + "</div>");
+				else if (json.errorMessage)
+					$("#pieceEdit .displayMessages").html("<div class='error-message'>" + json.errorMessage + "</div>");
+			}
+		};
+
+		$(this).ajaxSubmit(options);
+
+		return false;
+	});
+
+	//
+	$("fieldset.stave input").each(function() {
+		$(this).keyup(function() { updateVexTabTextarea(); });
+	});
+	$("fieldset.stave select, fieldset.stave input[type=checkbox]").each(function() {
+		$(this).change(function() { updateVexTabTextarea(); });
+	});
+});
+
+function pieceNewStave()
+{
+	var len = $("#staveList fieldset.stave").length + 1;
+
+	var html = staveHTML.replace(/_STAVE_NO_/gi, len);
+
+	$("#staveList").append(html);
+
+	$("#pieceStave" + len + " select").each(function() {
+		$(this).change(function() { updateVexTabTextarea(); });
+	});
+
+	$("#pieceStave" + len + " input").each(function() {
+		$(this).keyup(function() { updateVexTabTextarea(); });
+	});
+
+	for (var i = 0; i < 4; i++) {
+		pieceNewNote(len);
+	}
+
+	$($("#pieceStave" + len + " fieldset.noteEntry .duration option[data-vex=':q']")[0]).attr("selected", "selected");
+	$($("#pieceStave" + len + " fieldset.noteEntry .octave option[value='4']")[0]).attr("selected", "selected");
+
+	updateVexTabTextarea();
+}
+
+function pieceNewNote(staveNo)
+{
+	var len = $("#pieceStave" + staveNo + " fieldset.noteEntry").length + 1;
+
+	var html = noteHTML.replace(/_STAVE_NO_/gi, staveNo-1).replace(/_NOTE_NO_/gi, len);
+
+	$("#pieceStave" + staveNo + " .notes").append(html);
+
+	$("#pieceStaveNote" + len + " select, #pieceStaveNote" + len + " input[type=checkbox]").each(function() {
+		$(this).change(function() { updateVexTabTextarea(); });
+	});
+
+	$("#pieceStaveNote" + len + " input").each(function() {
+		$(this).keyup(function() { updateVexTabTextarea(); });
+	});
+
+	updateVexTabTextarea();
+}
+
+function pieceDeleteNote(staveNo, noteNo)
+{
+ $("#pieceStave" + staveNo + " #pieceStaveNote" + noteNo).remove();
+
+ updateVexTabTextarea();
 }
 
 function updateVexTabTextarea()
@@ -222,6 +271,8 @@ function updateVexTabTextarea()
 	var s = "";
 	var clef, key, topSpace, bottomSpace, topTime, bottomTime;
 	var note, duration, octave, dotted;
+
+	var noteField;
 
 	$("fieldset.stave").each(function() {
 		clef        = $(this).find(".clef option:selected").data("vex");
@@ -240,12 +291,14 @@ function updateVexTabTextarea()
 		s += "notes ";
 
 		$(this).find(".noteEntry").each(function() {
-			note     = $(this).find(".note option:selected").data("vex");
+			noteField = $(this).find(".note option:selected");
+
+			note     = noteField.data("vex");
 			duration = $(this).find(".duration option:selected").val().length ? $(this).find(".duration option:selected").data("vex") : duration;
 			octave   = $(this).find(".octave option:selected").val().length ? $(this).find(".octave option:selected").val() : octave;
-			dotted   = $(this).find(".dottedYes:checked").length ? "d" : "";
+			dotted   = $(this).find(".dotted:checked").length ? "d" : "";
 
-			s += duration + dotted + " " + note + "/" + octave + " ";
+			s += duration + dotted + " " + note + (noteField.data("non-note") == "0" ? "/" + octave : "") + " ";
 		});
 
 		s += "\noptions space=" + bottomSpace + "\n";

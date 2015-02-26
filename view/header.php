@@ -5,13 +5,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title><?php echo PAGE; ?></title>
+<title><?php echo ucwords(str_replace("-", " ", PAGE)); ?></title>
 
 <link rel="stylesheet" type="text/css" href="style/normalize.css">
 <link rel="stylesheet" type="text/css" href="style/style.css">
 
-<script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 <script type="text/javascript" src="js/vextab-div.js"></script>
+<script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
 <script type="text/javascript" src='https://www.google.com/recaptcha/api.js'></script>
 <script type="text/javascript" src='js/functions.js'></script>
 </head>

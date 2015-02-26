@@ -17,6 +17,9 @@ $piece = $result->fetch_assoc();
 ?>
 
 <form action="piece-edit.php?p=<?php echo $_GET['p']; ?>" method="post" id="pieceEdit">
+	<input type="hidden" name="p" value="<?php echo $_GET['p']; ?>">
+	<input type="hidden" name="manual" value="<?php echo $piece['Manual']; ?>">
+
 	<?php display_messages(); ?>
 	<p>
 		<label for="pieceTitle">Title</label>
@@ -28,108 +31,146 @@ $piece = $result->fetch_assoc();
 
 	<?php if (!$piece['Manual']) { ?>
 		<div id="staveList">
-			<!-- <legend>Stave 1</legend>
+			<?php
+			$sql = "SELECT * FROM PieceStaves
+					WHERE Piece_ID = '$pieceId'";
+			$staves = $mysqli->query($sql);
 
-			<p>
-				<label for="staveClef1">Clef</label>
-				<select name="staveClef[1]" id="staveClef1">
-					<?php
-					$sql = "SELECT * FROM Clefs ORDER BY Name";
-					$result = $mysqli->query($sql);
+			if ($staves->num_rows) {
+				$staveCount = 1;
 
-					while ($row = $result->fetch_assoc()) {
-						if ($_POST) {
-							$s = "selected";
-						}
-						elseif (!$_POST && $piece) {
-							$s = "selected";
-						}
-						elseif (!$_POST && !$piece && $row['VexTabNotation'] == "treble") {
-							$s = "selected";
-						}
-
-						echo "<option value='".$row['Clef_ID']."' {$s}>".$row['Name']."</option>";
-					}
+				while ($stave = $staves->fetch_assoc()) {
 					?>
-				</select>
+					<fieldset id="pieceStave<?php echo $staveCount; ?>" class="stave">
+						<legend>Stave <?php echo $staveCount; ?></legend>
 
-				<label for="staveKey1">Key</label>
-				<select name="staveKey[1]" id="staveKey1">
+						<p>
+							<label for="staveClef<?php echo $staveCount; ?>">Clef</label>
+							<select name="staveClef[]" id="staveClef<?php echo $staveCount; ?>" class="clef">
+								<?php
+								$sql = "SELECT * FROM Clefs ORDER BY Name";
+								$result = $mysqli->query($sql);
+
+								while ($row = $result->fetch_assoc()) {
+									$s = $stave['Clef_ID'] == $row['Clef_ID'] ? "selected" : "";
+
+									echo "<option value='".$row['Clef_ID']."' data-vex='".$row['VexTabNotation']."' {$s}>".$row['Name']."</option>";
+								}
+								?>
+							</select>
+
+							<label for="staveKey<?php echo $staveCount; ?>">Key</label>
+							<select name="staveKey[]" id="staveKey<?php echo $staveCount; ?>" class="key">
+								<?php
+								$sql = "SELECT * FROM `Keys` ORDER BY Name";
+								$result = $mysqli->query($sql);
+
+								while ($row = $result->fetch_assoc()) {
+									$s = $stave['Key_ID'] == $row['Key_ID'] ? "selected" : "";
+
+									echo "<option value='".$row['Key_ID']."' data-vex='".$row['VexTabNotation']."' {$s}>".$row['Name']."</option>";
+								}
+								?>
+							</select>
+
+							<label for="topSpace<?php echo $staveCount; ?>">Top Space</label>
+							<input type="text" name="topSpace[]" id="topSpace<?php echo $staveCount; ?>" class="topSpace"
+								   value="<?php echo $stave['TopSpace']; ?>">
+
+							<label for="bottomSpace<?php echo $staveCount; ?>">Bottom Space</label>
+							<input type="text" name="bottomSpace[]" id="bottomSpace<?php echo $staveCount; ?>" class="bottomSpace"
+								   value="<?php echo $stave['BottomSpace']; ?>">
+
+							<label for="upperTimeSig<?php echo $staveCount; ?>">Upper Time Sig</label>
+							<input type="text" name="upperTimeSig[]" id="upperTimeSig<?php echo $staveCount; ?>" class="topTime"
+								   value="<?php echo $stave['TopTime']; ?>">
+
+							<label for="lowerTimeSig<?php echo $staveCount; ?>">Lower Time Sig</label>
+							<input type="text" name="lowerTimeSig[]" id="lowerTimeSig<?php echo $staveCount; ?>" class="bottomTime"
+								   value="<?php echo $stave['BottomTime']; ?>">
+						</p>
+
+						<div class="notes">
+							<?php
+							$sql = "SELECT * FROM PieceStaveNotes
+									WHERE PieceStave_ID = '".$stave['PieceStave_ID']."'";
+							$notes = $mysqli->query($sql);
+
+							if ($notes->num_rows) {
+								$noteCount = 1;
+
+								while ($note = $notes->fetch_assoc()) {
+									?>
+									<fieldset id="pieceStaveNote<?php echo $noteCount; ?>" class="noteEntry">
+										<legend>Note <?php echo $noteCount; ?></legend>
+
+										<p><button type="button" onclick="pieceDeleteNote(<?php echo $staveCount; ?>, <?php echo $noteCount; ?>)">Delete</button>
+
+										<p>
+											<label for="staveNote<?php echo $staveCount.$noteCount; ?>">Note</label>
+											<select name="staveNote[<?php echo $staveCount-1; ?>][]" id="staveNote<?php echo $staveCount.$noteCount; ?>" class="note">
+												<option value="">Select...</option>
+												<?php
+												$sql = "SELECT * FROM `Notes` ORDER BY Name";
+												$result = $mysqli->query($sql);
+
+												while ($row = $result->fetch_assoc()) {
+													$s = $note['Note_ID'] == $row['Note_ID'] ? "selected" : "";
+
+													echo "<option value='".$row['Note_ID']."' data-vex='".$row['VexTabNotation']."' data-non-note='".$row['NonNote']."' {$s}>".$row['Name']."</option>";
+												}
+												?>
+											</select>
+										</p>
+										<p>
+											<label for="staveNoteDuration<?php echo $staveCount.$noteCount; ?>">Duration</label>
+											<select name="staveNoteDuration[<?php echo $staveCount-1; ?>][]" id="staveNoteDuration<?php echo $staveCount.$noteCount; ?>" class="duration">
+												<option value="">Select...</option>
+												<?php
+												$sql = "SELECT * FROM `Durations` ORDER BY Name";
+												$result = $mysqli->query($sql);
+
+												while ($row = $result->fetch_assoc()) {
+													$s = $note['Duration_ID'] == $row['Duration_ID'] ? "selected" : "";
+
+													echo "<option value='".$row['Duration_ID']."' data-vex='".$row['VexTabNotation']."' {$s}>".$row['Name']."</option>";
+												}
+												?>
+											</select>
+										</p>
+										<p>
+											<label for="staveNoteOctave<?php echo $staveCount.$noteCount; ?>">Octave</label>
+											<select name="staveNoteOctave[<?php echo $staveCount-1; ?>][]" id="staveNoteOctave<?php echo $staveCount.$noteCount; ?>" class="octave">
+												<option value="">Select...</option>
+												<?php
+												for ($i=0; $i < 11; $i++) {
+													$s = $note['Octave'] === (string)$i ? "selected" : "";
+
+													echo "<option value='".$i."' {$s}>".$i."</option>";
+												}
+												?>
+											</select>
+										</p>
+										<p>
+											<label for="staveNoteDotted<?php echo $staveCount.$noteCount; ?>">Dotted?</label>
+											<input type="checkbox" name="staveNoteDotted[<?php echo $staveCount-1; ?>][]" id="staveNoteDotted<?php echo $staveCount.$noteCount; ?>" class="dotted" value="1" <?php echo $note['Dotted'] ? "checked" : ""; ?>>
+										</p>
+									</fieldset>
+									<?php
+									$noteCount++;
+								}
+							}
+							?>
+						</div>
+						<p class="newNote">
+							<button type="button" onclick="pieceNewNote(<?php echo $staveCount; ?>)">New Note</button>
+						</p>
+					</fieldset>
 					<?php
-					$sql = "SELECT * FROM `Keys` ORDER BY Name";
-					$result = $mysqli->query($sql);
-
-					while ($row = $result->fetch_assoc()) {
-						echo "<option value='".$row['Key_ID']."'>".$row['Name']."</option>";
-					}
-					?>
-				</select>
-
-				<label for="topSpace1">Top Space</label>
-				<input type="text" name="topSpace[1]" id="topSpace1"
-					   value="">
-
-				<label for="bottomSpace1">Bottom Space</label>
-				<input type="text" name="bottomSpace[1]" id="bottomSpace1"
-					   value="">
-
-				<label for="upperTimeSig1">Upper Time Sig</label>
-				<input type="text" name="upperTimeSig[1]" id="upperTimeSig1"
-					   value="">
-
-				<label for="lowerTimeSig1">Lower Time Sig</label>
-				<input type="text" name="lowerTimeSig[1]" id="lowerTimeSig1"
-					   value="">
-			</p>
-
-			<fieldset>
-				<legend>Note 1</legend>
-
-				<p>
-					<label for="staveNote11">Note</label>
-					<select name="staveNote[1][1]" id="staveNote11">
-						<option value="">Select...</option>
-						<?php
-						$sql = "SELECT * FROM `Notes` ORDER BY Name";
-						$result = $mysqli->query($sql);
-
-						while ($row = $result->fetch_assoc()) {
-							echo "<option value='".$row['Note_ID']."'>".$row['Name']."</option>";
-						}
-						?>
-					</select>
-
-					<label for="staveNoteDuration11">Duration</label>
-					<select name="staveNoteDuration[1][1]" id="staveNoteDuration11">
-						<?php
-						$sql = "SELECT * FROM `Durations` ORDER BY Name";
-						$result = $mysqli->query($sql);
-
-						while ($row = $result->fetch_assoc()) {
-							echo "<option value='".$row['Duration_ID']."'>".$row['Name']."</option>";
-						}
-						?>
-					</select>
-
-					<label for="staveNoteOctave11">Octave</label>
-					<select name="staveNoteOctave[1][1]" id="staveNoteOctave11">
-						<?php
-						for ($i=0; $i < 11; $i++) {
-							echo "<option value='".$i."'>".$i."</option>";
-						}
-						?>
-					</select>
-
-					<label>Dotted?</label>
-					<label for="staveNoteDottedYes11" class="radio">Yes</label>
-					<input type="radio" name="staveNoteDotted[1][1]" id="staveNoteDottedYes11" value="1">
-					<label for="staveNoteDottedNo11" class="radio">No</label>
-					<input type="radio" name="staveNoteDotted[1][1]" id="staveNoteDottedNo11" value="1">
-				</p>
-			</fieldset>
-			<p>
-				<button onclick="">New Note</button>
-			</p> -->
+					$staveCount++;
+				}
+			}
+			?>
 		</div>
 		<p>
 			<button type="button" onclick="pieceNewStave()">New Stave</button>
@@ -139,7 +180,8 @@ $piece = $result->fetch_assoc();
 
 		<script type="text/javascript">
 		$(function() {
-			// $("#vextabContainer textarea").hide();
+			$("#vextabContainer textarea").hide();
+			updateVexTabTextarea();
 		});
 		</script>
 	<?php } else { ?>

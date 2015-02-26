@@ -8,7 +8,7 @@ require '../inc/functions.php';
 
 	<p>
 		<label for="staveClef_STAVE_NO_">Clef</label>
-		<select name="staveClef[_STAVE_NO_]" id="staveClef_STAVE_NO_" class="clef">
+		<select name="staveClef[]" id="staveClef_STAVE_NO_" class="clef">
 			<?php
 			$sql = "SELECT * FROM Clefs ORDER BY Name";
 			$result = $mysqli->query($sql);
@@ -22,7 +22,7 @@ require '../inc/functions.php';
 		</select>
 
 		<label for="staveKey_STAVE_NO_">Key</label>
-		<select name="staveKey[_STAVE_NO_]" id="staveKey_STAVE_NO_" class="key">
+		<select name="staveKey[]" id="staveKey_STAVE_NO_" class="key">
 			<?php
 			$sql = "SELECT * FROM `Keys` ORDER BY Name";
 			$result = $mysqli->query($sql);
@@ -36,19 +36,19 @@ require '../inc/functions.php';
 		</select>
 
 		<label for="topSpace_STAVE_NO_">Top Space</label>
-		<input type="text" name="topSpace[_STAVE_NO_]" id="topSpace_STAVE_NO_" class="topSpace"
+		<input type="text" name="topSpace[]" id="topSpace_STAVE_NO_" class="topSpace"
 			   value="10">
 
 		<label for="bottomSpace_STAVE_NO_">Bottom Space</label>
-		<input type="text" name="bottomSpace[_STAVE_NO_]" id="bottomSpace_STAVE_NO_" class="bottomSpace"
+		<input type="text" name="bottomSpace[]" id="bottomSpace_STAVE_NO_" class="bottomSpace"
 			   value="10">
 
 		<label for="upperTimeSig_STAVE_NO_">Upper Time Sig</label>
-		<input type="text" name="upperTimeSig[_STAVE_NO_]" id="upperTimeSig_STAVE_NO_" class="topTime"
+		<input type="text" name="upperTimeSig[]" id="upperTimeSig_STAVE_NO_" class="topTime"
 			   value="4">
 
 		<label for="lowerTimeSig_STAVE_NO_">Lower Time Sig</label>
-		<input type="text" name="lowerTimeSig[_STAVE_NO_]" id="lowerTimeSig_STAVE_NO_" class="bottomTime"
+		<input type="text" name="lowerTimeSig[]" id="lowerTimeSig_STAVE_NO_" class="bottomTime"
 			   value="4">
 	</p>
 

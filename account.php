@@ -50,6 +50,7 @@ if ($result->num_rows) {
 	<table>
 		<tr>
 			<th>Title</th>
+			<th>Manual</th>
 			<th>Created</th>
 			<th>&nbsp;</th>
 		</tr>
@@ -57,6 +58,7 @@ if ($result->num_rows) {
 		while ($row = $result->fetch_assoc()) {
 			echo "<tr>";
 			echo "<td>".$row['Title']."</td>";
+			echo "<td>".($row['Manual'] ? "Yes" : "No")."</td>";
 			echo "<td>";
 				echo "<a href='piece-edit.php?p=".$row['Piece_ID']."'>edit</a> &middot; ";
 				echo "<a href='piece-view.php?p=".$row['Piece_ID']."'>view</a>";
