@@ -1,7 +1,7 @@
 /* body */
 body {
 	background: #D5EBE8;
-	font-size: 16px;
+	font-size: 18px;
 }
 
 /* page container */
@@ -71,28 +71,30 @@ body {
 
 /* forms */
 label {
-	width: 150px;
+	width: 170px;
 	display: block;
 	float: left;
 	line-height: 30px;
 }
 label:nth-child(3) {
-	width: 145px;
+	width: 165px;
 	padding-left: 5px;
 }
-input {
-	width: 344px;
+input,
+button {
+	width: 324px;
 	padding: 2px;
 	display: block;
 	float: left;
 	border: 1px solid #666;
 	border-radius: 3px;
-	font-size: 24px;
+	/*font-size: 24px;*/
 }
 form p {
 	overflow: hidden;
 }
-input[type=submit] {
+input[type=submit],
+button[type=button] {
 	background: none;
 	width: auto !important;
 	padding: 6px 10px 4px;
@@ -100,18 +102,16 @@ input[type=submit] {
 	float: none;
 	border: 2px solid #000;
 }
-input[type=submit]:hover {
+input[type=submit]:hover,
+button[type=button]:hover {
 	text-shadow: 0px 0px 1px #999;
+}
+button[type=button] {
+	font-size: 16px;
 }
 input[type=radio] {
 	width: auto !important;
 	margin: 5px;
-}
-form .error-message {
-	color: #F00;
-}
-form .success-message {
-	color: #070;
 }
 label.radio {
 	width: auto !important;
@@ -156,6 +156,31 @@ label.radio {
 }
 #pieceEdit .newNote {
 	clear: left;
+}
+
+/* Messages */
+.error-message {
+	color: #F00;
+}
+.success-message {
+	color: #070;
+}
+
+/* Account Page */
+#piecesTable tr {
+	text-align: left;
+}
+#piecesTable td:first-child {
+	width: 300px;
+}
+#piecesTable td:nth-child(2) {
+	width: 100px;
+}
+#piecesTable td:nth-child(3) {
+	width: 200px;
+}
+#piecesTable td:nth-child(4) {
+	padding: 2px 5px;
 }
 
 /* Fizzing simulation */

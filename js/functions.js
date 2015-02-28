@@ -195,9 +195,9 @@ $(function() {
 			dataType: "json",
 			success: function(json) {
 				if (json.successMessage)
-					$("#pieceEdit .displayMessages").html("<div class='success-message'>" + json.successMessage + "</div>");
+					$("#pieceEdit .displayMessages").html("<p class='success-message'>" + json.successMessage + "</p>");
 				else if (json.errorMessage)
-					$("#pieceEdit .displayMessages").html("<div class='error-message'>" + json.errorMessage + "</div>");
+					$("#pieceEdit .displayMessages").html("<p class='error-message'>" + json.errorMessage + "</p>");
 			}
 		};
 
@@ -250,7 +250,7 @@ function pieceNewNote(staveNo)
 {
 	var len = $("#pieceStave" + staveNo + " fieldset.noteEntry").length + 1;
 
-	var html = noteHTML.replace(/_STAVE_NO_/gi, staveNo-1).replace(/_NOTE_NO_/gi, len);
+	var html = noteHTML.replace(/_STAVE_NO_/gi, staveNo).replace(/_NOTE_NO_/gi, len);
 
 	$("#pieceStave" + staveNo + " .notes").append(html);
 

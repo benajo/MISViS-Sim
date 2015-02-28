@@ -32,11 +32,42 @@ if (isset($_POST['new_piece'])) {
 		$result = $mysqli->query($sql);
 
 		if ($result) {
-			header("Location: piece-edit.php?p=".$mysqli->insert_id);
+			$pieceId = $mysqli->insert_id;
+
+			$sql = "INSERT INTO PieceStaves SET
+					Piece_ID    = '$pieceId',
+					Clef_ID     = 1,
+					Key_ID      = 1,
+					TopSpace    = 10,
+					BottomSpace = 10,
+					TopTime     = 4,
+					BottomTime  = 4
+					";
+			$result = $mysqli->query($sql);
+
+			header("Location: piece-edit.php?p=".$pieceId);
 			exit;
 		}
 		else {
 			$errorMessage = "There has been an unexpected error, please try again.";
 		}
 	}
+}
+elseif (isset($_GET['pieceDelete'])) {
+	$pieceId = $mysqli->real_escape_string($_GET['pieceDelete']);
+
+	$sql = "UPDATE Pieces SET
+			Deleted = 1
+			WHERE Piece_ID = '".$pieceId."'
+			AND   User_ID  = '".$_SESSION['user_id']."'";
+	$result = $mysqli->query($sql);
+
+	if ($result) {
+		$successMessage = "Piece has been deleted.";
+	}
+	else {
+		$errorMessage = "Piece failed to delete, please try again.";
+	}
+
+	$deleteMessage = true;
 }

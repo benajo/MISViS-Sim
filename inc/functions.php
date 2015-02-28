@@ -129,15 +129,15 @@ function display_messages()
 	echo "<div class='displayMessages'>";
 
 	if (strlen($errorMessage)) {
-		echo '<div class="error-message">';
+		echo '<p class="error-message">';
 		echo $errorMessage;
-		echo '</div>';
+		echo '</p>';
 	}
 
 	if (strlen($successMessage)) {
-		echo '<div class="success-message">';
+		echo '<p class="success-message">';
 		echo $successMessage;
-		echo '</div>';
+		echo '</p>';
 	}
 
 	echo "</div>";

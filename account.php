@@ -42,12 +42,14 @@ require './view/user-details-form.php';
 <h1>Pieces</h1>
 <?php
 $sql = "SELECT * FROM Pieces
-		WHERE User_ID = '".$_SESSION['user_id']."'";
+		WHERE User_ID = '".$_SESSION['user_id']."'
+		AND   Deleted = 0";
 $result = $mysqli->query($sql);
 
 if ($result->num_rows) {
 	?>
-	<table>
+	<?php if (isset($deleteMessage)) { display_messages(); } ?>
+	<table id="piecesTable">
 		<tr>
 			<th>Title</th>
 			<th>Manual</th>
@@ -59,9 +61,10 @@ if ($result->num_rows) {
 			echo "<tr>";
 			echo "<td>".$row['Title']."</td>";
 			echo "<td>".($row['Manual'] ? "Yes" : "No")."</td>";
+			echo "<td>".$row['Created']."</td>";
 			echo "<td>";
-				echo "<a href='piece-edit.php?p=".$row['Piece_ID']."'>edit</a> &middot; ";
-				echo "<a href='piece-view.php?p=".$row['Piece_ID']."'>view</a>";
+				echo "<button type='button' onclick=\"window.location='piece-edit.php?p=".$row['Piece_ID']."'\">Edit</button> ";
+				echo "<button type='button' onclick=\"window.location='account.php?pieceDelete=".$row['Piece_ID']."'\">Delete</button>";
 			echo "</td>";
 			echo "</tr>";
 		}

@@ -48,7 +48,7 @@ $piece = $result->fetch_assoc();
 
 						<p>
 							<label for="staveClef<?php echo $staveCount; ?>">Clef</label>
-							<select name="staveClef[]" id="staveClef<?php echo $staveCount; ?>" class="clef">
+							<select name="staveClef[<?php echo $staveCount; ?>]" id="staveClef<?php echo $staveCount; ?>" class="clef">
 								<?php
 								$sql = "SELECT * FROM Clefs ORDER BY Name";
 								$result = $mysqli->query($sql);
@@ -62,7 +62,7 @@ $piece = $result->fetch_assoc();
 							</select>
 
 							<label for="staveKey<?php echo $staveCount; ?>">Key</label>
-							<select name="staveKey[]" id="staveKey<?php echo $staveCount; ?>" class="key">
+							<select name="staveKey[<?php echo $staveCount; ?>]" id="staveKey<?php echo $staveCount; ?>" class="key">
 								<?php
 								$sql = "SELECT * FROM `Keys` ORDER BY Name";
 								$result = $mysqli->query($sql);
@@ -76,19 +76,19 @@ $piece = $result->fetch_assoc();
 							</select>
 
 							<label for="topSpace<?php echo $staveCount; ?>">Top Space</label>
-							<input type="text" name="topSpace[]" id="topSpace<?php echo $staveCount; ?>" class="topSpace"
+							<input type="text" name="topSpace[<?php echo $staveCount; ?>]" id="topSpace<?php echo $staveCount; ?>" class="topSpace"
 								   value="<?php echo $stave['TopSpace']; ?>">
 
 							<label for="bottomSpace<?php echo $staveCount; ?>">Bottom Space</label>
-							<input type="text" name="bottomSpace[]" id="bottomSpace<?php echo $staveCount; ?>" class="bottomSpace"
+							<input type="text" name="bottomSpace[<?php echo $staveCount; ?>]" id="bottomSpace<?php echo $staveCount; ?>" class="bottomSpace"
 								   value="<?php echo $stave['BottomSpace']; ?>">
 
 							<label for="upperTimeSig<?php echo $staveCount; ?>">Upper Time Sig</label>
-							<input type="text" name="upperTimeSig[]" id="upperTimeSig<?php echo $staveCount; ?>" class="topTime"
+							<input type="text" name="upperTimeSig[<?php echo $staveCount; ?>]" id="upperTimeSig<?php echo $staveCount; ?>" class="topTime"
 								   value="<?php echo $stave['TopTime']; ?>">
 
 							<label for="lowerTimeSig<?php echo $staveCount; ?>">Lower Time Sig</label>
-							<input type="text" name="lowerTimeSig[]" id="lowerTimeSig<?php echo $staveCount; ?>" class="bottomTime"
+							<input type="text" name="lowerTimeSig[<?php echo $staveCount; ?>]" id="lowerTimeSig<?php echo $staveCount; ?>" class="bottomTime"
 								   value="<?php echo $stave['BottomTime']; ?>">
 						</p>
 
@@ -110,7 +110,7 @@ $piece = $result->fetch_assoc();
 
 										<p>
 											<label for="staveNote<?php echo $staveCount.$noteCount; ?>">Note</label>
-											<select name="staveNote[<?php echo $staveCount-1; ?>][]" id="staveNote<?php echo $staveCount.$noteCount; ?>" class="note">
+											<select name="staveNote[<?php echo $staveCount; ?>][]" id="staveNote<?php echo $staveCount.$noteCount; ?>" class="note">
 												<option value="">Select...</option>
 												<?php
 												$sql = "SELECT * FROM `Notes` ORDER BY Name";
@@ -126,7 +126,7 @@ $piece = $result->fetch_assoc();
 										</p>
 										<p>
 											<label for="staveNoteDuration<?php echo $staveCount.$noteCount; ?>">Duration</label>
-											<select name="staveNoteDuration[<?php echo $staveCount-1; ?>][]" id="staveNoteDuration<?php echo $staveCount.$noteCount; ?>" class="duration">
+											<select name="staveNoteDuration[<?php echo $staveCount; ?>][]" id="staveNoteDuration<?php echo $staveCount.$noteCount; ?>" class="duration">
 												<option value="">Select...</option>
 												<?php
 												$sql = "SELECT * FROM `Durations` ORDER BY Name";
@@ -142,7 +142,7 @@ $piece = $result->fetch_assoc();
 										</p>
 										<p>
 											<label for="staveNoteOctave<?php echo $staveCount.$noteCount; ?>">Octave</label>
-											<select name="staveNoteOctave[<?php echo $staveCount-1; ?>][]" id="staveNoteOctave<?php echo $staveCount.$noteCount; ?>" class="octave">
+											<select name="staveNoteOctave[<?php echo $staveCount; ?>][]" id="staveNoteOctave<?php echo $staveCount.$noteCount; ?>" class="octave">
 												<option value="">Select...</option>
 												<?php
 												for ($i=0; $i < 11; $i++) {
@@ -155,7 +155,7 @@ $piece = $result->fetch_assoc();
 										</p>
 										<p>
 											<label for="staveNoteDotted<?php echo $staveCount.$noteCount; ?>">Dotted?</label>
-											<input type="checkbox" name="staveNoteDotted[<?php echo $staveCount-1; ?>][]" id="staveNoteDotted<?php echo $staveCount.$noteCount; ?>" class="dotted" value="1" <?php echo $note['Dotted'] ? "checked" : ""; ?>>
+											<input type="checkbox" name="staveNoteDotted[<?php echo $staveCount; ?>][]" id="staveNoteDotted<?php echo $staveCount.$noteCount; ?>" class="dotted" value="1" <?php echo $note['Dotted'] ? "checked" : ""; ?>>
 										</p>
 									</fieldset>
 									<?php

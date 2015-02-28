@@ -7,8 +7,16 @@ require_once '../inc/auth.php';
 $pieceId = $mysqli->real_escape_string($_POST['p']);
 $userId = $mysqli->real_escape_string($_SESSION['user_id']);
 
-$mysqli->query("DELETE FROM PieceStaves WHERE Piece_ID = '$pieceId'");
-// $mysqli->query("DELETE FROM PieceStaveNotes WHERE Piece_ID = '$pieceId'");
+$sql = "SELECT * FROM PieceStaves WHERE Piece_ID = '$pieceId'";
+$result = $mysqli->query($sql);
+
+if ($result->num_rows) {
+	while ($row = $result->fetch_assoc()) {
+		$mysqli->query("DELETE FROM PieceStaves WHERE Piece_ID = '$pieceId'");
+
+		$mysqli->query("DELETE FROM PieceStaveNotes WHERE PieceStave_ID = '".$row['PieceStave_ID']."'");
+	}
+}
 
 // print_r($_POST);
 
@@ -51,7 +59,9 @@ if ($_POST['manual'] == "1") {
 	}
 }
 else {
-	for ($i=0; $i<count($_POST['staveClef']); $i++) {
+	// for ($i=0; $i<count($_POST['staveClef']); $i++) {
+	// do not use for like above, see maintenance manual
+	foreach ($_POST['staveClef'] as $i => $v) {
 		$sql = "INSERT INTO PieceStaves SET
 				Piece_ID    = '$pieceId',
 				Clef_ID     = '".$mysqli->real_escape_string($_POST['staveClef'][$i])."',
@@ -65,7 +75,9 @@ else {
 
 		$newId = $mysqli->insert_id;
 
-		for ($j=0; $j<count($_POST['staveNote'][$i]); $j++) {
+		// for ($j=0; $j<count($_POST['staveNote'][$i]); $j++) {
+		// do not use for like above, see maintenance manual
+		foreach ($_POST['staveNote'][$i] as $j => $v) {
 			$duration = strlen($_POST['staveNoteDuration'][$i][$j]) ? "'".$mysqli->real_escape_string($_POST['staveNoteDuration'][$i][$j])."'" : "NULL";
 			$octave = strlen($_POST['staveNoteOctave'][$i][$j]) ? "'".$mysqli->real_escape_string($_POST['staveNoteOctave'][$i][$j])."'" : "NULL";
 			$dotted = isset($_POST['staveNoteDotted'][$i][$j]) && $_POST['staveNoteDotted'][$i][$j] == 1 ? 1 : 0;
