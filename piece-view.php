@@ -19,8 +19,8 @@ $row = $result->fetch_assoc();
 <div id="vextabContainer" class="vex-tabdiv" width="833" scale="1.2" editor="true" editor_width="994" editor_height="300"><?php echo isset($_POST['pieceData']) ? $_POST['pieceData'] : $row['Data']; ?></div>
 
 <p>
-	<button onclick="fizzing()">Fizzing</button>
-	<button onclick="fizzingOff()">Off</button>
+	<button type="button" onclick="fizzing()">Fizzing</button>
+	<button type="button" onclick="fizzingOff()">Off</button>
 </p>
 
 <script type="text/javascript">

@@ -63,6 +63,7 @@ if ($result->num_rows) {
 			echo "<td>".($row['Manual'] ? "Yes" : "No")."</td>";
 			echo "<td>".$row['Created']."</td>";
 			echo "<td>";
+				echo "<button type='button' onclick=\"window.location='piece-view.php?p=".$row['Piece_ID']."'\">View</button> ";
 				echo "<button type='button' onclick=\"window.location='piece-edit.php?p=".$row['Piece_ID']."'\">Edit</button> ";
 				echo "<button type='button' onclick=\"window.location='account.php?pieceDelete=".$row['Piece_ID']."'\">Delete</button>";
 			echo "</td>";
