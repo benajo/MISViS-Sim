@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MISViS Simulation - Whirlpool</title>
+
+<link rel="stylesheet" type="text/css" href="style/normalize.css">
+<link rel="stylesheet" type="text/css" href="style/style.css">
+
+<style type="text/css" media="screen">
+	.vex-canvas {
+		z-index: 0;
+	}
+	#whirlpoolCanvas {
+		z-index: 1;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+</style>
+
+<script type="text/javascript" src="js/vextab-div.js"></script>
+<script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+
+<script type="text/javascript">
+var run = false;
+var vexCanvas, vexContext, mainCanvas, mainContext, canvasWidth, canvasHeight, canvasCentre=[];
+
+var squares = new Array();
+var squareSize = 10;
+
+var requestAnimationFrame = window.requestAnimationFrame ||
+							window.mozRequestAnimationFrame ||
+							window.webkitRequestAnimationFrame ||
+							window.msRequestAnimationFrame;
+
+$(function() {
+	vexCanvas = document.getElementsByClassName("vex-canvas")[0];
+	vexContext = vexCanvas.getContext('2d');
+
+	canvasWidth = vexCanvas.width;
+	canvasHeight = vexCanvas.height;
+
+	canvasCentre[0] = Math.floor(canvasWidth/2);
+	canvasCentre[1] = Math.floor(canvasHeight/2);
+
+	$("#vextabContainer").append("<canvas id='whirlpoolCanvas' width='" + canvasWidth + "' height='" + canvasHeight + "'></canvas>");
+
+	mainCanvas = document.getElementById("whirlpoolCanvas");
+	mainContext = mainCanvas.getContext('2d');
+
+	// drawSquares();
+});
+
+function Circle(radius, speed, width, xPos, yPos) {
+	this.radius = radius;
+	this.speed = speed;
+	this.width = width;
+	this.xPos = xPos;
+	this.yPos = yPos;
+	this.opacity = .05 + Math.random() * .5;
+
+	this.counter = 0;
+
+	var signHelper = Math.floor(Math.random() * 2);
+
+	if (signHelper == 1) {
+		this.sign = -1;
+	} else {
+		this.sign = 1;
+	}
+}
+function Square(x, y, data)
+{
+	this.x = x;
+	this.y = y;
+	this.data = data;
+
+	var deltaY = (y + squareSize / 2) - canvasCentre[1];
+	var deltaX = (x + squareSize / 2) - canvasCentre[0];
+
+	this.angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+
+	this.counter = 0;
+}
+
+Square.prototype.update = function ()
+{
+	this.counter+=7;
+
+	// FIRST ATTEMPT
+	// var newX = this.x, newY = this.y;
+
+	// if (this.angle == 0) { // right
+	// 	newY += this.counter;
+	// }
+	// else if (this.angle > 0 && this.angle < 90) {
+	// 	newY += this.counter;
+	// 	newX += this.counter;
+
+	// }
+	// else if (this.angle == 90) { // down
+	// 	newX += this.counter;
+	// }
+	// else if (this.angle > 90 && this.angle < 180) {
+	// 	newY += this.counter;
+	// 	newX -= this.counter;
+	// }
+	// else if (this.angle == 180) { // left
+	// 	newY -= this.counter;
+	// }
+	// else if (this.angle < -90) { //
+	// 	newY -= this.counter;
+	// 	newX -= this.counter;
+	// }
+	// else if (this.angle == -90) { // up
+	// 	newX -= this.counter;
+	// }
+	// else if (this.angle > -90 && this.angle < 0) {
+	// 	newY -= this.counter;
+	// 	newX += this.counter;
+	// }
+
+	var newX = this.x, newY = this.y;
+
+	if (this.angle == 0) { // right
+		newY += this.counter;
+	}
+	else if (this.angle > 0 && this.angle < 90) {
+		newY += this.counter * (this.angle / 90);
+		newX += this.counter * (1 - (this.angle / 90));
+	}
+	else if (this.angle == 90) { // down
+		newX += this.counter;
+	}
+	else if (this.angle > 90 && this.angle < 180) {
+		newY += this.counter * (1 - ((this.angle-90) / 90));
+		newX -= this.counter * ((this.angle-90) / 90);
+	}
+	else if (this.angle == 180) { // left
+		newY -= this.counter;
+	}
+	else if (this.angle < -90) { //
+		newY -= this.counter * (1 - ((this.angle+90) / -90));
+		newX -= this.counter * ((this.angle+90) / -90);
+	}
+	else if (this.angle == -90) { // up
+		newX -= this.counter;
+	}
+	else if (this.angle > -90 && this.angle < 0) {
+		newY -= this.counter * (this.angle / -90);
+		newX += this.counter * (1 - (this.angle / -90));
+	}
+
+	mainContext.putImageData(this.data, newX, newY);
+
+	if (this.counter > 7) {
+		this.counter = 0;
+	}
+};
+
+
+function drawSquares()
+{
+	run = true;
+
+	var data;
+
+	for (var y = 0; y < canvasHeight; y+=squareSize) {
+		for (var x = 0; x < canvasWidth; x+=squareSize) {
+			data = vexContext.getImageData(x, y, squareSize, squareSize);
+
+			squares.push(new Square(x, y, data));
+	    }
+	}
+
+	draw();
+}
+
+function draw() {
+	mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
+
+	if (run) {
+		for (var i = 0; i < squares.length; i++) {
+			var mySquare = squares[i];
+			mySquare.update();
+		}
+
+		requestAnimationFrame(draw);
+	}
+}
+
+function stop()
+{
+	run = false;
+}
+</script>
+</head>
+<body>
+	<div id="vextabContainer" class="vex-tabdiv" width="700" scale="1.2" editor="true" editor_width="700" editor_height="150">
+	options space=0
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :8 E-D#/5 | E-D#-E/5 B/4 Dn-C/5 | :4 A/4 :8 ## C-E-A/4 | :4 B/4 :8 ## E-G#-B/4 | :4 C/5 :8 ## E/4-E-D#/5
+	options space=0
+
+	options space=0
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :8 E-D#-E/5 B/4 Dn-C/5 | :4 A/4 :8 ## C-E-A/4 | :4 B/4 :8 ## E/4-C/5-B/4 | :2 A/4 :8 E-D#/5 | E-D#-E/5 B/4 Dn-C/5
+	options space=0
+
+	options space=0
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :4 A/4 :8 ## C-E-A/4 | :4 B/4 :8 ## E-G#-B/4 | :4 C/5 :8 ## E/4-E/5-D#/5 | E-D#-E/5 B/4 Dn-C/5 | :4 A/4 :8 ## C-E-A/4
+	options space=0
+
+	options space=0
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :4 B/4 :8 ## E/4-C/5-B/4 | :4 A/4 :8 ## B/4-C-D/5 | :4d E/5 :8 G/4-F-E/5 | :4d D/5 :8 F/4-E-D/5 | :4d C/5 :8 E/4-D-C/5
+	options space=30
+	</div>
+
+	<button onclick="drawSquares()">Whirlpool</button>
+	<button onclick="stop()">Off</button>
+</body>
+</html>
