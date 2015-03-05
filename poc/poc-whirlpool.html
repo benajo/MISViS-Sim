@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>MISViS Simulation - Whirlpool</title>
 
+<!-- http://www.kirupa.com/html5/animating_many_things_on_a_canvas.htm -->
+
 <link rel="stylesheet" type="text/css" href="style/normalize.css">
 <link rel="stylesheet" type="text/css" href="style/style.css">
 
@@ -23,53 +25,47 @@
 <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 
 <script type="text/javascript">
-var run = false;
-var vexCanvas, vexContext, mainCanvas, mainContext, canvasWidth, canvasHeight, canvasCentre=[];
+var run = false; // when false, the simulation will be off
+var vexCanvas, vexContext; // for the vexTab original canvas
+var mainCanvas, mainContext; // for the overlay canvas
+var canvasWidth, canvasHeight;
+var canvasCentre = []; // holds x and y position of the canvas centre
 
-var squares = new Array();
-var squareSize = 10;
+var squares = new Array(); // list of the squares that will move
+var squareSize = 10; // the length of each square
 
+// multiple browser compatible animation frame
 var requestAnimationFrame = window.requestAnimationFrame ||
 							window.mozRequestAnimationFrame ||
 							window.webkitRequestAnimationFrame ||
 							window.msRequestAnimationFrame;
 
 $(function() {
+	// set vexTab canvas element
 	vexCanvas = document.getElementsByClassName("vex-canvas")[0];
 	vexContext = vexCanvas.getContext('2d');
 
+	// set canvas width and height
 	canvasWidth = vexCanvas.width;
 	canvasHeight = vexCanvas.height;
 
+	// set the canvas centre
 	canvasCentre[0] = Math.floor(canvasWidth/2);
 	canvasCentre[1] = Math.floor(canvasHeight/2);
 
+	// create the overlay canvas
 	$("#vextabContainer").append("<canvas id='whirlpoolCanvas' width='" + canvasWidth + "' height='" + canvasHeight + "'></canvas>");
 
+	// set overlay canvas element
 	mainCanvas = document.getElementById("whirlpoolCanvas");
 	mainContext = mainCanvas.getContext('2d');
-
-	// drawSquares();
 });
 
-function Circle(radius, speed, width, xPos, yPos) {
-	this.radius = radius;
-	this.speed = speed;
-	this.width = width;
-	this.xPos = xPos;
-	this.yPos = yPos;
-	this.opacity = .05 + Math.random() * .5;
-
-	this.counter = 0;
-
-	var signHelper = Math.floor(Math.random() * 2);
-
-	if (signHelper == 1) {
-		this.sign = -1;
-	} else {
-		this.sign = 1;
-	}
-}
+/**
+ * Class Square.
+ * Holds the square's x and y coordinates. Holds the pixel data for the square.
+ * Calculates the angle of the square to the canvas centre position.
+ */
 function Square(x, y, data)
 {
 	this.x = x;
@@ -84,9 +80,13 @@ function Square(x, y, data)
 	this.counter = 0;
 }
 
+/**
+ * Calculates the new position of a square based on its angle.
+ */
 Square.prototype.update = function ()
 {
-	this.counter+=7;
+	// set how far to move each square from its original position
+	this.counter += 10;
 
 	// FIRST ATTEMPT
 	// var newX = this.x, newY = this.y;
@@ -123,73 +123,95 @@ Square.prototype.update = function ()
 
 	var newX = this.x, newY = this.y;
 
+	// based on angle from the centre, calculate new positions
 	if (this.angle == 0) { // right
-		newY += this.counter;
+		newX += this.counter;
 	}
 	else if (this.angle > 0 && this.angle < 90) {
 		newY += this.counter * (this.angle / 90);
 		newX += this.counter * (1 - (this.angle / 90));
 	}
 	else if (this.angle == 90) { // down
-		newX += this.counter;
+		newY += this.counter;
 	}
 	else if (this.angle > 90 && this.angle < 180) {
 		newY += this.counter * (1 - ((this.angle-90) / 90));
 		newX -= this.counter * ((this.angle-90) / 90);
 	}
 	else if (this.angle == 180) { // left
-		newY -= this.counter;
+		newX -= this.counter;
 	}
 	else if (this.angle < -90) { //
 		newY -= this.counter * (1 - ((this.angle+90) / -90));
 		newX -= this.counter * ((this.angle+90) / -90);
 	}
 	else if (this.angle == -90) { // up
-		newX -= this.counter;
+		newY -= this.counter;
 	}
 	else if (this.angle > -90 && this.angle < 0) {
 		newY -= this.counter * (this.angle / -90);
 		newX += this.counter * (1 - (this.angle / -90));
 	}
 
+	// draw the square on the canvas
 	mainContext.putImageData(this.data, newX, newY);
 
-	if (this.counter > 7) {
+	if (this.counter > 10) {
+		// reset distance to 0
 		this.counter = 0;
 	}
 };
 
-
+/**
+ * This function creates the Square objects based on the size of each square.
+ * Each Square is added to the squares array.
+ * Calls draw() to initialise the simulation.
+ */
 function drawSquares()
 {
-	run = true;
+	run = true; // lets simulation know to run
 
-	var data;
+	var data; // holds data from the getImageData() method
 
+	// loop over the y axis
 	for (var y = 0; y < canvasHeight; y+=squareSize) {
+		// loop over the x axis
 		for (var x = 0; x < canvasWidth; x+=squareSize) {
 			data = vexContext.getImageData(x, y, squareSize, squareSize);
 
+			// add Square to the squares array
 			squares.push(new Square(x, y, data));
 	    }
 	}
 
+	// start simulation
 	draw();
 }
 
+/**
+ * Clears the canvas then loops over the squares array to update them.
+ * The update call draws the new square on the canvas.
+ */
 function draw() {
+	// clear the canvas
 	mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
 
+	// if simulation has not be stopped
 	if (run) {
+		// loop over each square
 		for (var i = 0; i < squares.length; i++) {
 			var mySquare = squares[i];
 			mySquare.update();
 		}
 
+		// set recursion loop
 		requestAnimationFrame(draw);
 	}
 }
 
+/**
+ * Stops the whirlpool simulation.
+ */
 function stop()
 {
 	run = false;
