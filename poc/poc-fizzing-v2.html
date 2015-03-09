@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MISViS Simulation - Fizzing V2</title>
+
+<link rel="stylesheet" type="text/css" href="style/normalize.css">
+<!-- <link rel="stylesheet" type="text/css" href="style/style.css"> -->
+
+<style type="text/css" media="screen">
+	.vex-canvas {
+		z-index: 1;
+		position: relative;
+	}
+	#fizzingCanvas {
+		z-index: 0;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+</style>
+
+<style type="text/css" media="screen">
+
+</style>
+
+<script type="text/javascript" src="js/vextab-div.js"></script>
+<script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+
+<script type="text/javascript">
+var run = false;
+var vexCanvas; // VexTab canvas element
+var canvasWidth, canvasHeight;
+
+var date, start, end;
+
+var scale; // scale value of the VexTab canvas
+var x; // x coordinate of start of lines
+var staveLineHeight; // height of stave lines in pixels
+var staveSpaceHeight; // height of stave space between lines in pixels
+var staveSpaceWidth;
+
+var blocks; // array of all Blocks
+
+
+
+
+// multiple browser compatible animation frame
+var requestAnimationFrame = window.requestAnimationFrame ||
+							window.mozRequestAnimationFrame ||
+							window.webkitRequestAnimationFrame ||
+							window.msRequestAnimationFrame;
+
+
+
+$(function() {
+	// set vexTab canvas element
+	vexCanvas = document.getElementsByClassName("vex-canvas")[0];
+
+	// set canvas width and height
+	canvasWidth = vexCanvas.width;
+	canvasHeight = vexCanvas.height;
+
+	// set the scale value
+	scale = parseFloat($("#vextabContainer").attr("scale"));
+
+	// set the x position
+	x = 12*scale;
+
+	// set the stave space width
+	staveSpaceWidth = vexCanvas.width - x*2;
+
+	// create the overlay canvas
+	$("#vextabContainer").append("<canvas id='fizzingCanvas' width='" + vexCanvas.width + "' height='" + vexCanvas.height + "'></canvas>");
+
+	// set overlay canvas element
+	mainCanvas = document.getElementById("fizzingCanvas");
+	mainContext = mainCanvas.getContext('2d');
+});
+
+/**
+ * This method assumes the dimensions of the canvas layout through personal inspection.
+ * This method was by far the fastest and was chosen for implementation.
+ * Values:
+ *    - height of the lines in the stave = 2px
+ *    - height of the space between the lines on the stave = 8px
+ *    - space at the top of the canvas = 38px
+ *    - space from the top of 1 stave to the top of the next = 90px
+ *    - manual spacings entered are in pixels and therefore easy to account for when
+ *      calculating positions of stave lines.
+ */
+function fizzing()
+{
+	run = true;
+	blocks = new Array()
+
+	date = new Date();
+	start = date.getTime();
+
+	var staveNo = $(".editor").val().match(/tabstave/ig).length; // amount of staves in the canvas
+
+	staveLineHeight = 2*scale, staveSpaceHeight = 8*scale;
+
+	var spacings = $(".editor").val().match(/space=([0-9]+)/ig); // the individual spacings in the canvas
+	// remove the text and just leave the integer value
+	for (var i = 0; i < spacings.length; i++) {
+		spacings[i] = parseFloat(spacings[i].split("=")[1]);
+	};
+
+	// defaults
+	var topSpace = (38+1)*scale; // +1 because 39 is where the first line begins
+	var topToTopSpace = 90*scale;
+
+	// each new stave has to account for previous spacings
+	// so tally up the total space as the loop progresses
+	var cumulativeSpace = 0;
+
+	var y;
+
+	// loop over each stave to find the stave line positions
+	for (var i = 0; i < staveNo; i++) {
+		// stave i has to account for space i*2 and i*2-1
+		// when i = 0, then i*2-1 is out of bounds, the if below accounts for it.
+		// a full explanation of this spacing calculation will be in the report
+		if (i == 0) {
+			cumulativeSpace += (spacings[i*2])*scale;
+		}
+		else {
+			cumulativeSpace += (spacings[i*2] + spacings[i*2-1])*scale;
+		}
+
+		// 5 lines per stave
+		for (var j = 0; j < 4; j++) {
+			y = (topSpace) + (topToTopSpace*i) + ((staveLineHeight+staveSpaceHeight)*j) + cumulativeSpace;
+
+			blocks.push(new Block(y + staveLineHeight));
+		};
+	};
+
+	date = new Date();
+	end = date.getTime();
+
+	console.log("Elapsed time method3(): " + (end - start));
+
+	draw();
+}
+
+
+
+// Class
+function Block(y)
+{
+	this.y = y;
+
+	this.counter = 0;
+}
+
+Block.prototype.update = function()
+{
+	var pixels = new Array();
+	var r;
+
+	for (var i = 0; i < staveSpaceWidth; i++) {
+		for (var j = 2; j < staveSpaceHeight-2; j++) {
+			pixels.push(100);
+			pixels.push(100);
+			pixels.push(100);
+
+			r = Math.random() * 2;
+
+			pixels.push(r < 1 ? 255 : 0);
+		};
+	};
+
+
+	var imageData = mainContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
+	imageData.data.set(pixels);
+
+	// draw the square on the canvas
+	mainContext.putImageData(imageData, x, this.y+2);
+}
+
+function draw()
+{
+	// clear the canvas
+	mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
+
+	// if simulation has not be stopped
+	if (run) {
+		// loop over each square
+		for (var i = 0; i < blocks.length; i++) {
+			var block = blocks[i];
+			block.update();
+		}
+
+		// set recursion loop
+		requestAnimationFrame(draw);
+	}
+}
+
+/**
+ * Stops the fizzing simulation.
+ */
+function stop()
+{
+	run = false;
+}
+
+</script>
+</head>
+<body>
+	<div id="vextabContainer" class="vex-tabdiv" width="700" scale="1.2" editor="true" editor_width="700" editor_height="150">
+	options space=0
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :8 E-D#/5 | E-D#-E/5 B/4 Dn-C/5 | :4 A/4 :8 ## C-E-A/4 | :4 B/4 :8 ## E-G#-B/4 | :4 C/5 :8 ## E/4-E-D#/5
+	options space=0
+
+	options space=0
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :8 E-D#-E/5 B/4 Dn-C/5 | :4 A/4 :8 ## C-E-A/4 | :4 B/4 :8 ## E/4-C/5-B/4 | :2 A/4 :8 E-D#/5 | E-D#-E/5 B/4 Dn-C/5
+	options space=0
+
+	options space=0
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :4 A/4 :8 ## C-E-A/4 | :4 B/4 :8 ## E-G#-B/4 | :4 C/5 :8 ## E/4-E/5-D#/5 | E-D#-E/5 B/4 Dn-C/5 | :4 A/4 :8 ## C-E-A/4
+	options space=0
+
+	options space=0
+		tabstave tablature=false notation=true
+		key=Am time=6/8
+
+		notes :4 B/4 :8 ## E/4-C/5-B/4 | :4 A/4 :8 ## B/4-C-D/5 | :4d E/5 :8 G/4-F-E/5 | :4d D/5 :8 F/4-E-D/5 | :4d C/5 :8 E/4-D-C/5
+	options space=30
+	</div>
+
+	<button onclick="fizzing()">Fizzing</button>
+	<button onclick="stop()">Off</button>
+</body>
+</html>

@@ -75,9 +75,10 @@ function Square(x, y, data)
 	var deltaY = (y + squareSize / 2) - canvasCentre[1];
 	var deltaX = (x + squareSize / 2) - canvasCentre[0];
 
-	this.angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+	this.angle = Math.atan2(deltaY, deltaX); // calculate the angle to the centre position using inverse tangent
+	this.angle = this.angle * 180 / Math.PI; // convert the angle form radians to degrees
 
-	this.counter = 0;
+	this.distance = 0;
 }
 
 /**
@@ -86,79 +87,82 @@ function Square(x, y, data)
 Square.prototype.update = function ()
 {
 	// set how far to move each square from its original position
-	this.counter += 10;
+	this.distance += 10;
 
 	// FIRST ATTEMPT
 	// var newX = this.x, newY = this.y;
 
 	// if (this.angle == 0) { // right
-	// 	newY += this.counter;
+	// 	newY += this.distance;
 	// }
 	// else if (this.angle > 0 && this.angle < 90) {
-	// 	newY += this.counter;
-	// 	newX += this.counter;
+	// 	newY += this.distance;
+	// 	newX += this.distance;
 
 	// }
 	// else if (this.angle == 90) { // down
-	// 	newX += this.counter;
+	// 	newX += this.distance;
 	// }
 	// else if (this.angle > 90 && this.angle < 180) {
-	// 	newY += this.counter;
-	// 	newX -= this.counter;
+	// 	newY += this.distance;
+	// 	newX -= this.distance;
 	// }
 	// else if (this.angle == 180) { // left
-	// 	newY -= this.counter;
+	// 	newY -= this.distance;
 	// }
 	// else if (this.angle < -90) { //
-	// 	newY -= this.counter;
-	// 	newX -= this.counter;
+	// 	newY -= this.distance;
+	// 	newX -= this.distance;
 	// }
 	// else if (this.angle == -90) { // up
-	// 	newX -= this.counter;
+	// 	newX -= this.distance;
 	// }
 	// else if (this.angle > -90 && this.angle < 0) {
-	// 	newY -= this.counter;
-	// 	newX += this.counter;
+	// 	newY -= this.distance;
+	// 	newX += this.distance;
 	// }
+	// FIRST ATTEMPT END
 
+	// SECOND ATTEMPT
 	var newX = this.x, newY = this.y;
 
 	// based on angle from the centre, calculate new positions
 	if (this.angle == 0) { // right
-		newX += this.counter;
+		newX += this.distance;
 	}
 	else if (this.angle > 0 && this.angle < 90) {
-		newY += this.counter * (this.angle / 90);
-		newX += this.counter * (1 - (this.angle / 90));
+		newY += this.distance * (this.angle / 90);
+		newX += this.distance * (1 - (this.angle / 90));
 	}
 	else if (this.angle == 90) { // down
-		newY += this.counter;
+		newY += this.distance;
 	}
 	else if (this.angle > 90 && this.angle < 180) {
-		newY += this.counter * (1 - ((this.angle-90) / 90));
-		newX -= this.counter * ((this.angle-90) / 90);
+		newY += this.distance * (1 - ((this.angle-90) / 90));
+		newX -= this.distance * ((this.angle-90) / 90);
 	}
 	else if (this.angle == 180) { // left
-		newX -= this.counter;
+		newX -= this.distance;
 	}
 	else if (this.angle < -90) { //
-		newY -= this.counter * (1 - ((this.angle+90) / -90));
-		newX -= this.counter * ((this.angle+90) / -90);
+		newY -= this.distance * (1 - ((this.angle+90) / -90));
+		newX -= this.distance * ((this.angle+90) / -90);
 	}
 	else if (this.angle == -90) { // up
-		newY -= this.counter;
+		newY -= this.distance;
 	}
 	else if (this.angle > -90 && this.angle < 0) {
-		newY -= this.counter * (this.angle / -90);
-		newX += this.counter * (1 - (this.angle / -90));
+		newY -= this.distance * (this.angle / -90);
+		newX += this.distance * (1 - (this.angle / -90));
 	}
+	// SECOND ATTEMPT END
 
 	// draw the square on the canvas
 	mainContext.putImageData(this.data, newX, newY);
 
-	if (this.counter > 10) {
+	if (this.distance > 10) {
 		// reset distance to 0
-		this.counter = 0;
+		this.distance = 0;
 	}
 };
 
