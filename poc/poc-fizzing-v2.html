@@ -42,16 +42,11 @@ var staveSpaceWidth;
 
 var blocks; // array of all Blocks
 
-
-
-
 // multiple browser compatible animation frame
 var requestAnimationFrame = window.requestAnimationFrame ||
 							window.mozRequestAnimationFrame ||
 							window.webkitRequestAnimationFrame ||
 							window.msRequestAnimationFrame;
-
-
 
 $(function() {
 	// set vexTab canvas element
@@ -145,13 +140,10 @@ function fizzing()
 	draw();
 }
 
-
-
 // Class
 function Block(y)
 {
 	this.y = y;
-
 	this.counter = 0;
 }
 
@@ -172,13 +164,61 @@ Block.prototype.update = function()
 		};
 	};
 
-
 	var imageData = mainContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
 	imageData.data.set(pixels);
 
 	// draw the square on the canvas
 	mainContext.putImageData(imageData, x, this.y+2);
 }
+
+// Class
+// function Block(y)
+// {
+// 	var pixels = new Array();
+// 	var r;
+
+// 	this.y = y;
+
+// 	this.counter = 0;
+// 	this.reset = 0;
+// 	this.stayOn = 0;
+
+// 	for (var i = 0; i < staveSpaceWidth; i++) {
+// 		for (var j = 2; j < staveSpaceHeight-2; j++) {
+// 			pixels.push(100);
+// 			pixels.push(100);
+// 			pixels.push(100);
+
+// 			r = Math.random() * 2;
+
+// 			pixels.push(r < 1 ? 255 : 0);
+// 		};
+// 	};
+
+// 	this.imageData = mainContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
+// 	this.imageData.data.set(pixels);
+// }
+
+// Block.prototype.update = function()
+// {
+// 	this.counter++;
+
+// 	if (this.reset == 0) {
+// 		this.stayOn = 20 + parseInt(Math.random() * 30);
+
+// 		this.reset = this.stayOn + 2;
+// 	}
+
+// 	if (this.counter < this.stayOn) {
+// 		// draw the block on the canvas
+// 		mainContext.putImageData(this.imageData, x, this.y+2);
+// 	}
+
+// 	if (this.counter == this.reset) {
+// 		this.counter = 0;
+// 		this.reset = 0;
+// 	}
+// }
 
 function draw()
 {
