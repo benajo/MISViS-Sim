@@ -2,10 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MISViS Simulation</title>
+<title>MISViS Simulation - Fizzing V1</title>
 
 <link rel="stylesheet" type="text/css" href="style/normalize.css">
-<link rel="stylesheet" type="text/css" href="style/style.css">
+
+<style type="text/css" media="screen">
+	#overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: -1;
+	}
+	#overlay > div {
+		position: absolute;
+	}
+	#overlay > div > div {
+		float: left;
+	}
+</style>
 
 <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 <script type="text/javascript" src="js/vextab-div.js"></script>
@@ -34,22 +48,24 @@ function hover()
 </script>
 
 <script type="text/javascript">
-var c; // VexTab canvas element
-var data; // for pixel colours
+var c;                // VexTab canvas element
+var data;             // for pixel colours
 var date, start, end;
 
-var scale; // scale value of the VexTab canvas
-var x; // x coordinate of start of lines
-var staveLineHeight; // height of stave lines in pixels
+var scale;            // scale value of the VexTab canvas
+var x;                // x coordinate of start of lines
+var staveLineHeight;  // height of stave lines in pixels
 var staveSpaceHeight; // height of stave space between lines in pixels
-var staveLines; // array of all stave line positions
+var staveLines;       // array of all stave line positions
 
-var overlayDivs; // div elements inside the overlay
+var overlayDivs;      // div elements inside the overlay
 
 $(function() {
 	c = document.getElementsByClassName("vex-canvas")[0]; // set the canvas element
+
 	// scale = parseFloat($(".editor").val().match(/scale=([0-9]+(\.[0-9]+)?)/i)[1]);
 	scale = parseFloat($("#vextabContainer").attr("scale")); // set the scale value
+
 	x = 12*scale; // set the x position
 });
 

@@ -5,7 +5,6 @@
 <title>MISViS Simulation - Fizzing V2</title>
 
 <link rel="stylesheet" type="text/css" href="style/normalize.css">
-<!-- <link rel="stylesheet" type="text/css" href="style/style.css"> -->
 
 <style type="text/css" media="screen">
 	.vex-canvas {
@@ -20,27 +19,26 @@
 	}
 </style>
 
-<style type="text/css" media="screen">
-
-</style>
-
 <script type="text/javascript" src="js/vextab-div.js"></script>
 <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 
 <script type="text/javascript">
-var run = false;
-var vexCanvas; // VexTab canvas element
+// finalVer determines which version of the effect to display
+// true is the final most realistic version
+// false is the replicated version from Nigel's DyslexSim
+var finalVer;
+
+var run = false;      // when false, the simulation will be off
+var vexCanvas;        // VexTab canvas element
 var canvasWidth, canvasHeight;
 
-var date, start, end;
-
-var scale; // scale value of the VexTab canvas
-var x; // x coordinate of start of lines
-var staveLineHeight; // height of stave lines in pixels
+var scale;            // scale value of the VexTab canvas
+var x;                // x coordinate of start of lines
+var staveLineHeight;  // height of stave lines in pixels
 var staveSpaceHeight; // height of stave space between lines in pixels
-var staveSpaceWidth;
+var staveSpaceWidth;  // width of the stave space in pixels
 
-var blocks; // array of all Blocks
+var blocks;           // array of all Blocks
 
 // multiple browser compatible animation frame
 var requestAnimationFrame = window.requestAnimationFrame ||
@@ -84,13 +82,12 @@ $(function() {
  *    - manual spacings entered are in pixels and therefore easy to account for when
  *      calculating positions of stave lines.
  */
-function fizzing()
+function fizzing(ver)
 {
+	finalVer = ver;
+
 	run = true;
 	blocks = new Array()
-
-	date = new Date();
-	start = date.getTime();
 
 	var staveNo = $(".editor").val().match(/tabstave/ig).length; // amount of staves in the canvas
 
@@ -132,93 +129,112 @@ function fizzing()
 		};
 	};
 
-	date = new Date();
-	end = date.getTime();
-
-	console.log("Elapsed time method3(): " + (end - start));
-
 	draw();
 }
 
-// Class
+/**
+ * Class Block.
+ * Holds the relevant block information.
+ * A block is the space between stave lines.
+ *
+ * The final version creates new random pixel arrays for each block
+ * over each recursion to display a new block of pixels on each recursion.
+ *
+ * The replication version creates a random pixel array when the
+ * block is created, then flickers it on and off at random intervals.
+ */
 function Block(y)
 {
-	this.y = y;
-	this.counter = 0;
+	if (finalVer) {
+		this.y = y;
+		this.counter = 0;
+	}
+	else {
+		var pixels = new Array();
+		var r;
+
+		this.y = y;
+
+		this.counter = 0;
+		this.reset = 0;
+		this.stayOn = 0;
+
+		// create a random array of pixels for the block
+		// pixel count multiplied by 4 is the array size
+		// because each pixel has a red, green, blue and alpha value
+		for (var i = 0; i < staveSpaceWidth; i++) {
+			// start and 2 and end at n-2 so the blocks don't touch the stave lines
+			for (var j = 2; j < staveSpaceHeight-2; j++) { // +2 and -2 were an implementation change
+				// set RGB to 100 each, which is grey
+				pixels.push(100);
+				pixels.push(100);
+				pixels.push(100);
+
+				r = Math.random() * 2;
+
+				// 50% change of setting the pixel to transparent or opaque
+				pixels.push(r < 1 ? 255 : 0);
+			};
+		};
+
+		// create the imageData array list required for the canvas
+		this.imageData = mainContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
+		this.imageData.data.set(pixels);
+	}
 }
 
 Block.prototype.update = function()
 {
-	var pixels = new Array();
-	var r;
+	// will redraw a new pixel array on every recursion
+	if (finalVer) {
+		var pixels = new Array();
+		var r;
 
-	for (var i = 0; i < staveSpaceWidth; i++) {
-		for (var j = 2; j < staveSpaceHeight-2; j++) {
-			pixels.push(100);
-			pixels.push(100);
-			pixels.push(100);
+		for (var i = 0; i < staveSpaceWidth; i++) {
+			for (var j = 2; j < staveSpaceHeight-2; j++) {
+				pixels.push(100);
+				pixels.push(100);
+				pixels.push(100);
 
-			r = Math.random() * 2;
+				r = Math.random() * 2;
 
-			pixels.push(r < 1 ? 255 : 0);
+				pixels.push(r < 1 ? 255 : 0);
+			};
 		};
-	};
 
-	var imageData = mainContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
-	imageData.data.set(pixels);
+		var imageData = mainContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
+		imageData.data.set(pixels);
 
-	// draw the square on the canvas
-	mainContext.putImageData(imageData, x, this.y+2);
+		// draw the square on the canvas
+		mainContext.putImageData(imageData, x, this.y+2);
+	}
+	// will flicker the same pixel array
+	else {
+		this.counter++;
+
+		// when reset is 0 it means the counter caught up with the reset value
+		if (this.reset == 0) {
+			// stayOn will always be between 20 and 50
+			this.stayOn = 20 + parseInt(Math.random() * 30);
+
+			// reset must be slightly bigger than stayOn
+			this.reset = this.stayOn + 2;
+		}
+
+		// while the counter is less than the stayOn value it displays the pixel block
+		// when the counter overtakes stayOn it draws nothing, for a short time, which simulates a flickering effect
+		if (this.counter < this.stayOn) {
+			// draw the block on the canvas
+			mainContext.putImageData(this.imageData, x, this.y+2);
+		}
+
+		// set the counter and reset back to 0
+		if (this.counter == this.reset) {
+			this.counter = 0;
+			this.reset = 0;
+		}
+	}
 }
-
-// Class
-// function Block(y)
-// {
-// 	var pixels = new Array();
-// 	var r;
-
-// 	this.y = y;
-
-// 	this.counter = 0;
-// 	this.reset = 0;
-// 	this.stayOn = 0;
-
-// 	for (var i = 0; i < staveSpaceWidth; i++) {
-// 		for (var j = 2; j < staveSpaceHeight-2; j++) {
-// 			pixels.push(100);
-// 			pixels.push(100);
-// 			pixels.push(100);
-
-// 			r = Math.random() * 2;
-
-// 			pixels.push(r < 1 ? 255 : 0);
-// 		};
-// 	};
-
-// 	this.imageData = mainContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
-// 	this.imageData.data.set(pixels);
-// }
-
-// Block.prototype.update = function()
-// {
-// 	this.counter++;
-
-// 	if (this.reset == 0) {
-// 		this.stayOn = 20 + parseInt(Math.random() * 30);
-
-// 		this.reset = this.stayOn + 2;
-// 	}
-
-// 	if (this.counter < this.stayOn) {
-// 		// draw the block on the canvas
-// 		mainContext.putImageData(this.imageData, x, this.y+2);
-// 	}
-
-// 	if (this.counter == this.reset) {
-// 		this.counter = 0;
-// 		this.reset = 0;
-// 	}
-// }
 
 function draw()
 {
@@ -279,7 +295,8 @@ function stop()
 	options space=30
 	</div>
 
-	<button onclick="fizzing()">Fizzing</button>
+	<button onclick="fizzing(true)">Fizzing final</button>
+	<button onclick="fizzing(false)">Fizzing copy</button>
 	<button onclick="stop()">Off</button>
 </body>
 </html>
