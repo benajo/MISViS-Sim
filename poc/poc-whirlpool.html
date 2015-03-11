@@ -26,7 +26,7 @@
 <script type="text/javascript">
 var run = false;             // when false, the simulation will be off
 var vexCanvas, vexContext;   // for the vexTab original canvas
-var mainCanvas, mainContext; // for the overlay canvas
+var whirlpoolCanvas, whirlpoolContext; // for the overlay canvas
 var canvasWidth, canvasHeight;
 var canvasCentre = [];       // holds x and y position of the canvas centre
 
@@ -56,8 +56,8 @@ $(function() {
 	$("#vextabContainer").append("<canvas id='whirlpoolCanvas' width='" + canvasWidth + "' height='" + canvasHeight + "'></canvas>");
 
 	// set overlay canvas element
-	mainCanvas = document.getElementById("whirlpoolCanvas");
-	mainContext = mainCanvas.getContext('2d');
+	whirlpoolCanvas = document.getElementById("whirlpoolCanvas");
+	whirlpoolContext = whirlpoolCanvas.getContext('2d');
 });
 
 /**
@@ -157,7 +157,7 @@ Square.prototype.update = function ()
 	// SECOND ATTEMPT END
 
 	// draw the square on the canvas
-	mainContext.putImageData(this.data, newX, newY);
+	whirlpoolContext.putImageData(this.data, newX, newY);
 
 	if (this.distance > 10) {
 		// reset distance to 0
@@ -168,9 +168,9 @@ Square.prototype.update = function ()
 /**
  * This function creates the Square objects based on the size of each square.
  * Each Square is added to the squares array.
- * Calls draw() to initialise the simulation.
+ * Calls drawWhirlpool() to initialise the simulation.
  */
-function drawSquares()
+function createWhirlpoolSquares()
 {
 	run = true; // lets simulation know to run
 
@@ -188,16 +188,16 @@ function drawSquares()
 	}
 
 	// start simulation
-	draw();
+	drawWhirlpool();
 }
 
 /**
  * Clears the canvas then loops over the squares array to update them.
  * The update call draws the new square on the canvas.
  */
-function draw() {
+function drawWhirlpool() {
 	// clear the canvas
-	mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
+	whirlpoolContext.clearRect(0, 0, canvasWidth, canvasHeight);
 
 	// if simulation has not be stopped
 	if (run) {
@@ -208,14 +208,14 @@ function draw() {
 		}
 
 		// set recursion loop
-		requestAnimationFrame(draw);
+		requestAnimationFrame(drawWhirlpool);
 	}
 }
 
 /**
  * Stops the whirlpool simulation.
  */
-function stop()
+function stopWhirlpool()
 {
 	run = false;
 }
@@ -252,7 +252,7 @@ function stop()
 	options space=30
 	</div>
 
-	<button onclick="drawSquares()">Whirlpool</button>
-	<button onclick="stop()">Off</button>
+	<button onclick="createWhirlpoolSquares()">Whirlpool</button>
+	<button onclick="stopWhirlpool()">Off</button>
 </body>
 </html>

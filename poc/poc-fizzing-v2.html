@@ -28,17 +28,18 @@
 // false is the replicated version from Nigel's DyslexSim
 var finalVer;
 
-var run = false;      // when false, the simulation will be off
-var vexCanvas;        // VexTab canvas element
+var run = false;             // when false, the simulation will be off
+var vexCanvas;               // VexTab canvas element
+var fizzingCanvas, fizzingContext; // for the overlay canvas
 var canvasWidth, canvasHeight;
 
-var scale;            // scale value of the VexTab canvas
-var x;                // x coordinate of start of lines
-var staveLineHeight;  // height of stave lines in pixels
-var staveSpaceHeight; // height of stave space between lines in pixels
-var staveSpaceWidth;  // width of the stave space in pixels
+var scale;                   // scale value of the VexTab canvas
+var x;                       // x coordinate of start of lines
+var staveLineHeight;         // height of stave lines in pixels
+var staveSpaceHeight;        // height of stave space between lines in pixels
+var staveSpaceWidth;         // width of the stave space in pixels
 
-var blocks;           // array of all Blocks
+var blocks;                  // array of all Blocks
 
 // multiple browser compatible animation frame
 var requestAnimationFrame = window.requestAnimationFrame ||
@@ -61,14 +62,14 @@ $(function() {
 	x = 12*scale;
 
 	// set the stave space width
-	staveSpaceWidth = vexCanvas.width - x*2;
+	staveSpaceWidth = canvasWidth - x*2;
 
 	// create the overlay canvas
-	$("#vextabContainer").append("<canvas id='fizzingCanvas' width='" + vexCanvas.width + "' height='" + vexCanvas.height + "'></canvas>");
+	$("#vextabContainer").append("<canvas id='fizzingCanvas' width='" + canvasWidth + "' height='" + canvasHeight + "'></canvas>");
 
 	// set overlay canvas element
-	mainCanvas = document.getElementById("fizzingCanvas");
-	mainContext = mainCanvas.getContext('2d');
+	fizzingCanvas = document.getElementById("fizzingCanvas");
+	fizzingContext = fizzingCanvas.getContext('2d');
 });
 
 /**
@@ -129,7 +130,7 @@ function fizzing(ver)
 		};
 	};
 
-	draw();
+	drawFizzing();
 }
 
 /**
@@ -178,7 +179,7 @@ function Block(y)
 		};
 
 		// create the imageData array list required for the canvas
-		this.imageData = mainContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
+		this.imageData = fizzingContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
 		this.imageData.data.set(pixels);
 	}
 }
@@ -202,11 +203,11 @@ Block.prototype.update = function()
 			};
 		};
 
-		var imageData = mainContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
+		var imageData = fizzingContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
 		imageData.data.set(pixels);
 
 		// draw the square on the canvas
-		mainContext.putImageData(imageData, x, this.y+2);
+		fizzingContext.putImageData(imageData, x, this.y+2);
 	}
 	// will flicker the same pixel array
 	else {
@@ -225,7 +226,7 @@ Block.prototype.update = function()
 		// when the counter overtakes stayOn it draws nothing, for a short time, which simulates a flickering effect
 		if (this.counter < this.stayOn) {
 			// draw the block on the canvas
-			mainContext.putImageData(this.imageData, x, this.y+2);
+			fizzingContext.putImageData(this.imageData, x, this.y+2);
 		}
 
 		// set the counter and reset back to 0
@@ -236,10 +237,10 @@ Block.prototype.update = function()
 	}
 }
 
-function draw()
+function drawFizzing()
 {
 	// clear the canvas
-	mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
+	fizzingContext.clearRect(0, 0, canvasWidth, canvasHeight);
 
 	// if simulation has not be stopped
 	if (run) {
@@ -250,14 +251,14 @@ function draw()
 		}
 
 		// set recursion loop
-		requestAnimationFrame(draw);
+		requestAnimationFrame(drawFizzing);
 	}
 }
 
 /**
  * Stops the fizzing simulation.
  */
-function stop()
+function stopFizzing()
 {
 	run = false;
 }
@@ -297,6 +298,6 @@ function stop()
 
 	<button onclick="fizzing(true)">Fizzing final</button>
 	<button onclick="fizzing(false)">Fizzing copy</button>
-	<button onclick="stop()">Off</button>
+	<button onclick="stopFizzing()">Off</button>
 </body>
 </html>
