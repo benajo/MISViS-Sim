@@ -1,9 +1,14 @@
 <?php
 if (PAGE == "account") {
+	echo "<h1>Your Details</h1>";
+
 	$sql = "SELECT * FROM Users
 			WHERE User_ID = '".$_SESSION['user_id']."'";
 	$result = $mysqli->query($sql);
 	$row = $result->fetch_assoc();
+}
+else {
+	echo "<h1>Register</h1>";
 }
 ?>
 <form action="<?php echo PAGE; ?>.php" method="post" id="user-details-form">

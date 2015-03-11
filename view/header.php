@@ -14,7 +14,8 @@
 <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 <script type="text/javascript" src="js/jquery.form.js"></script>
 <script type="text/javascript" src='https://www.google.com/recaptcha/api.js'></script>
-<script type="text/javascript" src='js/functions.js'></script>
+<script type="text/javascript" src='js/simulation-functions.js'></script>
+<script type="text/javascript" src='js/piece-edit-functions.js'></script>
 </head>
 
 <body>
