@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Ben Jovanic
- * @version 2014-02-22
+ * @version 2015-02-13
  *
  * Generates a random string of letters and numbers to the specified length.
  */

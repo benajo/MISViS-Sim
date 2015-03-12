@@ -1,3 +1,3 @@
 <?php
+// defines the current page with .php on the end
 define("PAGE", basename($_SERVER['PHP_SELF'], '.php'));
-define("SITE_URL", "http://localhost:8888/");

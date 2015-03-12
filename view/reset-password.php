@@ -3,7 +3,10 @@
 <form action="reset-password.php<?php echo $validRequest ? "?c=".$_GET['c']."&amp;i=".$_GET['i'] : ""; ?>" method="post" id="login-form">
 	<?php display_messages(); ?>
 
-	<?php if ($validRequest) { ?>
+	<?php
+	// $validRequest is set in the controller/reset-password.php
+	if ($validRequest) {
+		?>
 		<p>
 			<label for="userPass">New Password</label>
 			<input type="password" name="userPass" id="userPass" value="">
@@ -16,7 +19,10 @@
 			<input type="submit" name="step2" value="Submit">
 			<a href="reset-password.php">Back</a>
 		</p>
-	<?php } else { ?>
+		<?php
+	}
+	else {
+		?>
 		<p>
 			<label for="userEmail">Email</label>
 			<input type="text" name="userEmail" id="userEmail"
@@ -26,5 +32,7 @@
 			<input type="submit" name="step1" value="Submit">
 			<a href="login.php">Back to login</a>
 		</p>
-	<?php } ?>
+		<?php
+	}
+	?>
 </form>

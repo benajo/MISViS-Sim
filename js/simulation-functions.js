@@ -24,6 +24,7 @@ var requestAnimationFrame = window.requestAnimationFrame ||
 							window.webkitRequestAnimationFrame ||
 							window.msRequestAnimationFrame;
 
+// this function is called when the page finishes loading
 $(function() {
 	// set vexTab canvas element
 	vexCanvas = document.getElementsByClassName("vex-canvas")[0];
@@ -244,6 +245,7 @@ Square.prototype.update = function ()
 	var newX = this.x, newY = this.y;
 
 	// based on angle from the centre, calculate new positions
+	// see Design section of report for full explanation
 	if (this.angle == 0) { // right
 		newX += this.distance;
 	}

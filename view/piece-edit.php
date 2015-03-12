@@ -1,6 +1,18 @@
+<?php
+/**
+ * This files lists the options for editing a piece.
+ *
+ * If it is a manual piece, then simply the Vextab textarea is displayed for editing.
+ *
+ * If it is a non-manual piece, all of the current staves and notes are extracted from
+ * the DB to be displayed.
+ */
+?>
 <h1>Edit Piece</h1>
 
 <?php
+$pieceId = $mysqli->real_escape_string($_GET['p']);
+
 $sql = "SELECT * FROM Pieces
 		WHERE Piece_ID = '$pieceId'";
 $result = $mysqli->query($sql);
@@ -173,7 +185,9 @@ $piece = $result->fetch_assoc();
 
 		<script type="text/javascript">
 		$(function() {
+			// ensure the textarea is hidden for non-manual editing
 			$("#vextabContainer textarea").hide();
+			// update the vextab canvas on page load
 			updateVexTabTextarea();
 		});
 		</script>

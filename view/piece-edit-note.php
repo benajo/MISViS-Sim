@@ -1,4 +1,10 @@
 <?php
+/**
+ * This file is only called by an ajax call when the piece-edit.php
+ * page is loaded. _STAVE_NO_ and _NOTE_NO_ are place holders for
+ * JavaScript to update appropriately.
+ */
+
 require '../inc/settings.php';
 require '../inc/globals.php';
 require '../inc/functions.php';

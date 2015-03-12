@@ -13,7 +13,17 @@
 		$options = array("Yes" => 1, "No" => 0);
 
 		foreach ($options as $k => $v) {
-			$checked = isset($_POST['pieceManual']) && $_POST['pieceManual'] == $v ? " checked " : (!isset($_POST['pieceManual']) && $v == 1 ? " checked " : "");
+			// if this loop item matches the post value, ensure the option is checked
+			if (isset($_POST['pieceManual']) && $_POST['pieceManual'] == $v) {
+				$checked = " checked ";
+			}
+			// make sure Yes is the default checked option when creating a new piece
+			elseif (!isset($_POST['pieceManual']) && $v == 1) {
+				$checked = " checked ";
+			}
+			else {
+				$checked = "";
+			}
 
 			echo "<label for='pieceManual{$k}' class='radio'>{$k}</label>";
 			echo "<input type='radio' name='pieceManual' id='pieceManual{$k}' value='{$v}' {$checked}>";

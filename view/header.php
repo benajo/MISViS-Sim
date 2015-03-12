@@ -1,6 +1,3 @@
-<?php
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,12 +23,13 @@
 			<ul>
 				<li><a href="index.php">Home</a></li>
 				<li><a href="about.php">About</a></li>
+
 				<?php if (isset($_SESSION['auth']) && $_SESSION['auth']) { ?>
-				<li><a href="account.php">Account</a></li>
-				<li><a href="account.php?logout">Logout</a></li>
+					<li><a href="account.php">Account</a></li>
+					<li><a href="account.php?logout">Logout</a></li>
 				<?php } else { ?>
-				<li><a href="register.php">Register</a></li>
-				<li><a href="login.php">Login</a></li>
+					<li><a href="register.php">Register</a></li>
+					<li><a href="login.php">Login</a></li>
 				<?php } ?>
 			</ul>
 		</div>
