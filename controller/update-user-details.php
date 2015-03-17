@@ -80,4 +80,3 @@ if (isset($_POST['register']) || isset($_POST['update'])) {
 		}
 	}
 }
-// coments done

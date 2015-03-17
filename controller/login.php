@@ -12,7 +12,7 @@ if (isset($_POST['login'])) {
 		$result = $mysqli->query($sql);
 
 		if (!$result->num_rows) {
-			$errorMessage .= "Email address not found.";
+			$errorMessage .= "Email address not found.<br>";
 		}
 		else {
 			// email address found so get the row form the DB

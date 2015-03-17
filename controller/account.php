@@ -27,7 +27,7 @@ if (isset($_POST['new_piece'])) {
 		$default  = "options space=0\n";
 		$default .= "\ttabstave tablature=false notation=true\n";
 		$default .= "\tkey=C time=4/4\n\n";
-		$default .= "\tnotes :8 \n";
+		$default .= "\tnotes :w C/4 \n";
 		$default .= "options space=0";
 
 		// create the new piece
@@ -52,6 +52,17 @@ if (isset($_POST['new_piece'])) {
 						BottomSpace = 10,
 						TopTime     = 4,
 						BottomTime  = 4
+						";
+				$result = $mysqli->query($sql);
+
+				$pieceStaveId = $mysqli->insert_id;
+
+				$sql = "INSERT INTO PieceStaveNotes SET
+						PieceStave_ID = '$pieceStaveId',
+						Note_ID       = 1,
+						Duration_ID   = 1,
+						Octave        = 4,
+						Dotted        = 0
 						";
 				$result = $mysqli->query($sql);
 			}

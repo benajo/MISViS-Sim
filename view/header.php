@@ -10,9 +10,15 @@
 <script type="text/javascript" src="js/vextab-div.js"></script>
 <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 <script type="text/javascript" src="js/jquery.form.js"></script>
-<script type="text/javascript" src='https://www.google.com/recaptcha/api.js'></script>
-<script type="text/javascript" src='js/simulation-functions.js'></script>
-<script type="text/javascript" src='js/piece-edit-functions.js'></script>
+<?php if (PAGE == "register") { ?>
+	<script type="text/javascript" src='https://www.google.com/recaptcha/api.js'></script>
+<?php } ?>
+<?php if (PAGE == "piece-view") { ?>
+	<script type="text/javascript" src='js/simulation-functions.js'></script>
+<?php } ?>
+<?php if (PAGE == "piece-edit") { ?>
+	<script type="text/javascript" src='js/piece-edit-functions.js'></script>
+<?php } ?>
 </head>
 
 <body>

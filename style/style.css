@@ -139,12 +139,19 @@ label.radio {
 	float: none;
 }
 #pieceEdit .noteEntry label {
+	width: 75px;
 	display: block;
 	float: left;
 }
 #pieceEdit .noteEntry input {
 	display: block;
 	float: left;
+}
+#pieceEdit .noteEntry input[type=checkbox] {
+	margin-top: 3px;
+}
+#pieceEdit .noteEntry select {
+	width: 120px;
 }
 #pieceEdit .noteEntry {
 	width: 215px;
@@ -153,9 +160,6 @@ label.radio {
 }
 #pieceEdit .noteEntry:nth-child(4n+0) {
 	margin-right: 0;
-}
-#pieceEdit .noteEntry label {
-	width: 65px;
 }
 #pieceEdit .noteEntry p {
 	margin: 5px 0;

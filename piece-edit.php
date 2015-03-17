@@ -7,4 +7,5 @@ require './inc/auth.php';
 require './controller/piece-edit.php';
 
 require './view/header.php';
+require './view/piece-edit.php';
 require './view/footer.php';

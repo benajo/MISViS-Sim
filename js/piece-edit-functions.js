@@ -49,9 +49,10 @@ $(function() {
 	});
 
 	// add an event to all stave form fields to upadte the VexTab texarea when changed
-	$("fieldset.stave input", "fieldset.stave select").each(function() {
-		$(this).keyup(function() { updateVexTabTextarea(); });
-		$(this).change(function() { updateVexTabTextarea(); });
+	$("fieldset.stave input, fieldset.stave select").each(function() {
+		$(this)
+			.keyup(function() { updateVexTabTextarea(); })
+			.change(function() { updateVexTabTextarea(); });
 	});
 
 	// set the current amount of staves
@@ -74,17 +75,19 @@ function pieceNewStave()
 
 	// add an event to the form fields to upadte the VexTab textarea when changed
 	$("#pieceStave" + staveCount + " select, #pieceStave" + staveCount + " input").each(function() {
-		$(this).change(function() { updateVexTabTextarea(); });
-		$(this).keyup(function() { updateVexTabTextarea(); });
+		$(this)
+			.change(function() { updateVexTabTextarea(); })
+			.keyup(function() { updateVexTabTextarea(); });
 	});
 
-	// add 4 notes to this new stave
-	for (var i = 0; i < 4; i++) {
+	// add a note to this new stave
+	// there is potential to add more via the loop
+	for (var i = 0; i < 1; i++) {
 		pieceNewNote(staveCount);
 	}
 
 	// set the first note duration be a quarter
-	$($("#pieceStave" + staveCount + " fieldset.noteEntry .duration option[data-vex=':q']")[0]).attr("selected", "selected");
+	$($("#pieceStave" + staveCount + " fieldset.noteEntry .duration option[data-vex=':w']")[0]).attr("selected", "selected");
 	// set the first note octave be 4
 	$($("#pieceStave" + staveCount + " fieldset.noteEntry .octave option[value='4']")[0]).attr("selected", "selected");
 
@@ -125,10 +128,13 @@ function pieceNewNote(staveNo)
  */
 function pieceDeleteNote(staveNo, noteNo)
 {
-	// deletes the note element
-	$("#pieceStave" + staveNo + " #pieceStaveNote" + noteNo).remove();
+	// cannot delete the last note
+	if ($("#pieceStave" + staveNo + " .noteEntry").length > 1) {
+		// deletes the note element
+		$("#pieceStave" + staveNo + " #pieceStaveNote" + noteNo).remove();
 
-	updateVexTabTextarea();
+		updateVexTabTextarea();
+	}
 }
 
 /**
@@ -136,12 +142,15 @@ function pieceDeleteNote(staveNo, noteNo)
  */
 function pieceDeleteStave(staveNo)
 {
-	// deletes the stave element
-	$("#pieceStave" + staveNo).remove();
+	// cannot delete the final stave
+	if ($("fieldset.stave").length > 1) {
+		// deletes the stave element
+		$("#pieceStave" + staveNo).remove();
 
-	updateStaveNos();
+		updateStaveNos();
 
-	updateVexTabTextarea();
+		updateVexTabTextarea();
+	}
 }
 
 /**

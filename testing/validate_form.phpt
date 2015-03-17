@@ -1,8 +1,8 @@
 --TEST--
-validate_form() function - A basic test to see if it works. :)
+validate_form() function - A basic test to see if it works.
 --FILE--
 <?php
-include '../inc/functions.php'; // might need to adjust path if not in the same dir
+include '../inc/functions.php';
 var_dump(validate_form("test-email@@something.com", "email", "Email"));
 var_dump(validate_form("test-email@something.com", "email", "Email"));
 ?>

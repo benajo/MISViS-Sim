@@ -24,6 +24,9 @@
 <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 
 <script type="text/javascript">
+var disappear = false; // used to simulate the disappearing effect
+
+
 var run = false;             // when false, the simulation will be off
 var vexCanvas, vexContext;   // for the vexTab original canvas
 var whirlpoolCanvas, whirlpoolContext; // for the overlay canvas
@@ -89,7 +92,7 @@ Square.prototype.update = function ()
 	// set how far to move each square from its original position
 	this.distance += 10;
 
-	// FIRST ATTEMPT
+	//----- FIRST ATTEMPT
 	// var newX = this.x, newY = this.y;
 
 	// if (this.angle == 0) { // right
@@ -121,9 +124,9 @@ Square.prototype.update = function ()
 	// 	newY -= this.distance;
 	// 	newX += this.distance;
 	// }
-	// FIRST ATTEMPT END
+	//----- FIRST ATTEMPT END
 
-	// SECOND ATTEMPT
+	//----- SECOND ATTEMPT
 	var newX = this.x, newY = this.y;
 
 	// based on angle from the centre, calculate new positions
@@ -156,12 +159,12 @@ Square.prototype.update = function ()
 		newY -= this.distance * (this.angle / -90);
 		newX += this.distance * (1 - (this.angle / -90));
 	}
-	// SECOND ATTEMPT END
+	//----- SECOND ATTEMPT END
 
 	// draw the square on the canvas
 	whirlpoolContext.putImageData(this.data, newX, newY);
 
-	if (this.distance > 10) {
+	if (!disappear && this.distance > 10) {
 		// reset distance to 0
 		this.distance = 0;
 	}
@@ -254,7 +257,8 @@ function stopWhirlpool()
 	options space=30
 	</div>
 
-	<button onclick="createWhirlpoolSquares()">Whirlpool</button>
+	<button onclick="disappear=false; createWhirlpoolSquares()">Whirlpool</button>
+	<button onclick="disappear=true; createWhirlpoolSquares()">Disappear</button>
 	<button onclick="stopWhirlpool()">Off</button>
 </body>
 </html>
