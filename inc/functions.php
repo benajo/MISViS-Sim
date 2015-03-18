@@ -126,19 +126,19 @@ function display_messages()
 {
 	global $errorMessage, $successMessage;
 
-	echo "<div class='displayMessages'>";
+	echo "<div class='displayMessages'>\n";
 
 	if (strlen($errorMessage)) {
-		echo '<p class="error-message">';
-		echo $errorMessage;
-		echo '</p>';
+		echo "<p class='error-message'>\n";
+		echo $errorMessage . "\n";
+		echo "</p>\n";
 	}
 
 	if (strlen($successMessage)) {
-		echo '<p class="success-message">';
-		echo $successMessage;
-		echo '</p>';
+		echo "<p class='success-message'>\n";
+		echo $successMessage."\n";
+		echo "</p>\n";
 	}
 
-	echo "</div>";
+	echo "</div>\n";
 }
