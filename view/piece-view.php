@@ -13,11 +13,7 @@ $row = $result->fetch_assoc();
 
 <p>
 	<button type="button" class="simButton" onclick="startFizzing()">Fizzing</button>
-</p>
-<p>
 	<button type="button" class="simButton" onclick="startWhirlpool()">Whirlpool</button>
-</p>
-<p>
 	<button type="button" onclick="stopAll()">Off</button>
 </p>
 

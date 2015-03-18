@@ -84,7 +84,7 @@ function startFizzing()
 
 	staveLineHeight = 2*scale, staveSpaceHeight = 8*scale;
 
-	var spacings = $(".editor").val().match(/space=([0-9]+)/ig); // the individual spacings in the canvas
+	var spacings = $(".editor").val().match(/space=([0-9-]+)/ig); // the individual spacings in the canvas
 	// remove the text and just leave the integer value
 	for (var i = 0; i < spacings.length; i++) {
 		spacings[i] = parseFloat(spacings[i].split("=")[1]);

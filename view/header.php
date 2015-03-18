@@ -13,7 +13,7 @@
 <?php if (PAGE == "register") { ?>
 	<script type="text/javascript" src='https://www.google.com/recaptcha/api.js'></script>
 <?php } ?>
-<?php if (PAGE == "piece-view") { ?>
+<?php if (PAGE == "piece-view" || PAGE == "index") { ?>
 	<script type="text/javascript" src='js/simulation-functions.js'></script>
 <?php } ?>
 <?php if (PAGE == "piece-edit") { ?>

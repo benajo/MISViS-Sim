@@ -2,6 +2,7 @@
 body {
 	background: #D5EBE8;
 	font-size: 18px;
+	line-height: 1.2em;
 }
 
 /* page container */
@@ -101,6 +102,7 @@ button[type=button] {
 	display: inline;
 	float: none;
 	border: 2px solid #000;
+	line-height: 1em;
 }
 input[type=submit]:hover,
 button[type=button]:hover {
@@ -191,6 +193,16 @@ label.radio {
 }
 #piecesTable td:nth-child(4) {
 	padding: 2px 5px;
+}
+
+/* About Page */
+.about-table {
+	overflow: hidden;
+}
+.about-table div {
+	width: 500px;
+	float: left;
+	text-align: center;
 }
 
 /* Simulations */
