@@ -15,7 +15,7 @@ var staveSpaceWidth;         // width of the stave space in pixels
 var blocks;                  // array of all Blocks
 
 // whirlpool variables
-var squares;   // list of the squares that will move
+var squares;                 // list of the squares that will move
 var squareSize = 10;         // the length of each square
 
 // multiple browser compatible animation frame
@@ -140,30 +140,52 @@ function Block(y)
 	this.counter = 0;
 }
 
+/**
+ * Updates the Block with a new random fizzing image.
+ *
+ * The method includes commented out code that created a pixels array
+ * and then set() it to the imageData object. This worked in Chrome,
+ * but did not work in Firefox. The solution was to add the pixel information
+ * directly into the imageData object as it looped over them pixels.
+ */
 Block.prototype.update = function()
 {
-	var pixels = new Array();
-	var r;
+	// no longer required, see method description
+	// var pixels = new Array();
+	var r, k = 0;
+
+	var imageData = fizzingContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
 
 	for (var i = 0; i < staveSpaceWidth; i++) {
 		for (var j = 2; j < staveSpaceHeight-2; j++) {
-			pixels.push(100);
-			pixels.push(100);
-			pixels.push(100);
-
 			r = Math.random() * 2;
 
-			pixels.push(r < 1 ? 255 : 0);
+			// no longer required, see method description
+			// pixels.push(100);
+			// pixels.push(100);
+			// pixels.push(100);
+			// pixels.push(r < 1 ? 255 : 0);
+
+			imageData.data[k++] = 100;
+			imageData.data[k++] = 100;
+			imageData.data[k++] = 100;
+			imageData.data[k++] = r < 1 ? 255 : 0;
+
+			;
 		};
 	};
 
-	var imageData = fizzingContext.createImageData(staveSpaceWidth, staveSpaceHeight-4);
-	imageData.data.set(pixels);
+	// no longer required, see method description
+	// imageData.data.set(pixels);
 
 	// draw the square on the canvas
 	fizzingContext.putImageData(imageData, x, this.y+2);
 }
 
+/**
+ * Clears the canvas then loops over the blocks array to update them.
+ * The update call draws the new block on the canvas.
+ */
 function drawFizzing()
 {
 	// clear the canvas

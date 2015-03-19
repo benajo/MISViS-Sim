@@ -185,6 +185,9 @@ function Block(y)
 	}
 }
 
+/**
+ * Updates the Block with a new random fizzing image.
+ */
 Block.prototype.update = function()
 {
 	// will redraw a new pixel array on every recursion
@@ -238,6 +241,10 @@ Block.prototype.update = function()
 	}
 }
 
+/**
+ * Clears the canvas then loops over the blocks array to update them.
+ * The update call draws the new block on the canvas.
+ */
 function drawFizzing()
 {
 	// clear the canvas

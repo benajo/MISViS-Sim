@@ -43,14 +43,6 @@ require '../inc/functions.php';
 			?>
 		</select>
 
-		<label for="topSpace_STAVE_NO_">Top Space</label>
-		<input type="text" name="topSpace[_STAVE_NO_]" id="topSpace_STAVE_NO_" class="topSpace"
-			   value="10">
-
-		<label for="bottomSpace_STAVE_NO_">Bottom Space</label>
-		<input type="text" name="bottomSpace[_STAVE_NO_]" id="bottomSpace_STAVE_NO_" class="bottomSpace"
-			   value="10">
-
 		<label for="upperTimeSig_STAVE_NO_">Upper Time Sig</label>
 		<input type="text" name="upperTimeSig[_STAVE_NO_]" id="upperTimeSig_STAVE_NO_" class="topTime"
 			   value="4">
@@ -58,6 +50,16 @@ require '../inc/functions.php';
 		<label for="lowerTimeSig_STAVE_NO_">Lower Time Sig</label>
 		<input type="text" name="lowerTimeSig[_STAVE_NO_]" id="lowerTimeSig_STAVE_NO_" class="bottomTime"
 			   value="4">
+	</p>
+
+	<p>
+		<label for="topSpace_STAVE_NO_">Top Space</label>
+		<input type="text" name="topSpace[_STAVE_NO_]" id="topSpace_STAVE_NO_" class="topSpace"
+			   value="10">
+
+		<label for="bottomSpace_STAVE_NO_">Bottom Space</label>
+		<input type="text" name="bottomSpace[_STAVE_NO_]" id="bottomSpace_STAVE_NO_" class="bottomSpace"
+			   value="10">
 	</p>
 
 	<div class="notes">

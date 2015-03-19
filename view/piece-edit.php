@@ -78,14 +78,6 @@ $piece = $result->fetch_assoc();
 								?>
 							</select>
 
-							<label for="topSpace<?php echo $staveCount; ?>">Top Space</label>
-							<input type="text" name="topSpace[<?php echo $staveCount; ?>]" id="topSpace<?php echo $staveCount; ?>" class="topSpace"
-								   value="<?php echo $stave['TopSpace']; ?>">
-
-							<label for="bottomSpace<?php echo $staveCount; ?>">Bottom Space</label>
-							<input type="text" name="bottomSpace[<?php echo $staveCount; ?>]" id="bottomSpace<?php echo $staveCount; ?>" class="bottomSpace"
-								   value="<?php echo $stave['BottomSpace']; ?>">
-
 							<label for="upperTimeSig<?php echo $staveCount; ?>">Upper Time Sig</label>
 							<input type="text" name="upperTimeSig[<?php echo $staveCount; ?>]" id="upperTimeSig<?php echo $staveCount; ?>" class="topTime"
 								   value="<?php echo $stave['TopTime']; ?>">
@@ -93,6 +85,16 @@ $piece = $result->fetch_assoc();
 							<label for="lowerTimeSig<?php echo $staveCount; ?>">Lower Time Sig</label>
 							<input type="text" name="lowerTimeSig[<?php echo $staveCount; ?>]" id="lowerTimeSig<?php echo $staveCount; ?>" class="bottomTime"
 								   value="<?php echo $stave['BottomTime']; ?>">
+						</p>
+
+						<p>
+							<label for="topSpace<?php echo $staveCount; ?>">Top Space</label>
+							<input type="text" name="topSpace[<?php echo $staveCount; ?>]" id="topSpace<?php echo $staveCount; ?>" class="topSpace"
+								   value="<?php echo $stave['TopSpace']; ?>">
+
+							<label for="bottomSpace<?php echo $staveCount; ?>">Bottom Space</label>
+							<input type="text" name="bottomSpace[<?php echo $staveCount; ?>]" id="bottomSpace<?php echo $staveCount; ?>" class="bottomSpace"
+								   value="<?php echo $stave['BottomSpace']; ?>">
 						</p>
 
 						<div class="notes">

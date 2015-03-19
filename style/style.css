@@ -3,6 +3,7 @@ body {
 	background: #D5EBE8;
 	font-size: 18px;
 	line-height: 1.2em;
+	text-align: justify;
 }
 
 /* page container */
@@ -25,6 +26,7 @@ body {
 #page-logo {
 	float: left;
 	font-size: 48px;
+	line-height: 1em;
 }
 
 /* page navigation */
