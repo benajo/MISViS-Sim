@@ -24,6 +24,10 @@
 <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 
 <script type="text/javascript">
+// whirlpool scalability testing variables
+var start, end, date;
+
+
 var disappear = false; // used to simulate the disappearing effect
 
 
@@ -33,7 +37,7 @@ var whirlpoolCanvas, whirlpoolContext; // for the overlay canvas
 var canvasWidth, canvasHeight;
 var canvasCentre = [];       // holds x and y position of the canvas centre
 
-var squares = new Array();   // list of the squares that will move
+var squares;                 // list of the squares that will move
 var squareSize = 10;         // the length of each square
 
 // multiple browser compatible animation frame
@@ -62,6 +66,13 @@ $(function() {
 	// set overlay canvas element
 	whirlpoolCanvas = document.getElementById("whirlpoolCanvas");
 	whirlpoolContext = whirlpoolCanvas.getContext('2d');
+
+
+	// scalability testing loop to create the squares array 10 times
+	// for (var i = 0; i < 10; i++) {
+	// 	createWhirlpoolSquares();
+	// 	stopWhirlpool();
+	// };
 });
 
 /**
@@ -181,6 +192,13 @@ function createWhirlpoolSquares()
 
 	var data; // holds data from the getImageData() method
 
+	squares = new Array(); // ensure the array is emptied before running (again)
+
+	// start date to record time started
+	date = new Date();
+	start = date.getTime();
+
+
 	// loop over the y axis
 	for (var y = 0; y < canvasHeight; y+=squareSize) {
 		// loop over the x axis
@@ -191,6 +209,13 @@ function createWhirlpoolSquares()
 			squares.push(new Square(x, y, data));
 	    }
 	}
+
+	// end time to calculate time taken
+	date = new Date();
+	end = date.getTime();
+	// output time taken in milliseconds
+	console.log(end - start);
+
 
 	// start simulation
 	drawWhirlpool();
@@ -227,7 +252,7 @@ function stopWhirlpool()
 </script>
 </head>
 <body>
-	<div id="vextabContainer" class="vex-tabdiv" width="700" scale="1.2" editor="true" editor_width="700" editor_height="150">
+	<div id="vextabContainer" class="vex-tabdiv" width="833" scale="1.2" editor="true" editor_width="700" editor_height="150">
 	options space=0
 		tabstave tablature=false notation=true
 		key=Am time=6/8
@@ -254,7 +279,7 @@ function stopWhirlpool()
 		key=Am time=6/8
 
 		notes :4 B/4 :8 ## E/4-C/5-B/4 | :4 A/4 :8 ## B/4-C-D/5 | :4d E/5 :8 G/4-F-E/5 | :4d D/5 :8 F/4-E-D/5 | :4d C/5 :8 E/4-D-C/5
-	options space=30
+	options space=0
 	</div>
 
 	<button onclick="disappear=false; createWhirlpoolSquares()">Whirlpool</button>
