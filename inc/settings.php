@@ -5,7 +5,12 @@ session_start();
 date_default_timezone_set("Europe/London");
 
 // DB connection
-$mysqli = new mysqli("localhost", "ben", "password", "misvis");
+$host = "localhost";
+$user = "ben";
+$password = "password";
+$database = "misvis";
+
+$mysqli = new mysqli($host, $user, $password, $database);
 
 // display a connection error if it fails
 if ($mysqli->connect_errno) {
